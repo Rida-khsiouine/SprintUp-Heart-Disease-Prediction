@@ -1,28 +1,35 @@
 # SprintUp-Heart-Disease-Prediction
 🫀 Heart Disease Prediction – Comprehensive ML Pipeline
-This project is the final output of the SprintUp - AI & Machine Learning Foundations training offered by Sprints. It demonstrates the end-to-end process of building a Machine Learning solution using the Heart Disease UCI dataset.
+This project is the final output of the SprintUp - AI & Machine Learning Foundations training by [Sprints](https://sprints.ai/), showcasing an end-to-end ML solution using the UCI Heart Disease Dataset.
 
-📌 Project Objective
-Build a comprehensive Machine Learning pipeline that can classify whether a patient is likely to have heart disease based on clinical and personal health data.
+🎯 Project Objective
+
+Predict heart disease: classify whether a patient is likely to have heart disease based on clinical and personal health data.
 
 📊 Dataset
-Source: UCI Heart Disease Dataset
-Features: 13 clinical attributes + target
-Target: Presence or absence of heart disease (binary classification)
-🚀 ML Pipeline Overview 🔹 1. Data Preprocessing & Cleaning Handling missing values Encoding categorical variables Feature scaling and normalization
 
-🔹 2. Dimensionality Reduction Applied PCA (Principal Component Analysis) to reduce feature space and visualize data
+[UCI Heart Disease Dataset](https://archive.ics.uci.edu/ml/datasets/heart+Disease) – 13 clinical features + binary target (presence / absence of heart disease).
 
-🔹 3. Feature Selection Selected top features based on correlation and model-based techniques
+🚀 ML Pipeline Overview
 
-🔹 4. Supervised Learning Trained and evaluated multiple classification models: Logistic Regression Decision Trees Random Forest SVM
+Data Preprocessing & Cleaning: handle missing values, encode categorical variables, scale features.
 
-🔹 5. Unsupervised Learning Clustered data using: K-Means Hierarchical Clustering
+Dimensionality Reduction: applied PCA to reduce feature space and visualize data.
 
-🔹 6. Hyperparameter Tuning Used GridSearchCV & RandomizedSearchCV for model optimization
+Feature Selection: selected top features using correlation and model-based techniques.
 
-🔹 7. Model Export & Deployment Exported final model using pickle
+Supervised Learning: trained Logistic Regression, Decision Trees, Random Forest, SVM.
 
-📈 Evaluation Metrics Accuracy Precision Recall F1-score Confusion Matrix
+Unsupervised Learning: clustered data using K-Means and Hierarchical Clustering.
 
-🙏 Acknowledgments Sprints for offering the training program. UCI for the public dataset.
+Hyperparameter Tuning: optimized models with GridSearchCV & RandomizedSearchCV.
+
+Model Export & Deployment: exported final trained pipeline using pickle.
+
+📈 Evaluation Metrics
+
+Accuracy, Precision, Recall, F1-score, Confusion Matrix
+
+🙏 Acknowledgments
+
+Thanks to [Sprints](https://sprints.ai/) for the training program and UCI for the publicly available dataset.
