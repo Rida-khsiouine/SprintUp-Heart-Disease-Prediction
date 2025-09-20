@@ -12,19 +12,19 @@ Predict heart disease: classify whether a patient is likely to have heart diseas
 
 🚀 ML Pipeline Overview
 
-Data Preprocessing & Cleaning: handle missing values, encode categorical variables, scale features.
+🔹Data Preprocessing & Cleaning: handle missing values, encode categorical variables, scale features.
 
-Dimensionality Reduction: applied PCA to reduce feature space and visualize data.
+🔹Dimensionality Reduction: applied PCA to reduce feature space and visualize data.
 
-Feature Selection: selected top features using correlation and model-based techniques.
+🔹Feature Selection: selected top features using correlation and model-based techniques.
 
-Supervised Learning: trained Logistic Regression, Decision Trees, Random Forest, SVM.
+🔹Supervised Learning: trained Logistic Regression, Decision Trees, Random Forest, SVM.
 
-Unsupervised Learning: clustered data using K-Means and Hierarchical Clustering.
+🔹Unsupervised Learning: clustered data using K-Means and Hierarchical Clustering.
 
-Hyperparameter Tuning: optimized models with GridSearchCV & RandomizedSearchCV.
+🔹Hyperparameter Tuning: optimized models with GridSearchCV & RandomizedSearchCV.
 
-Model Export & Deployment: exported final trained pipeline using pickle.
+🔹Model Export & Deployment: exported final trained pipeline using pickle.
 
 📈 Evaluation Metrics
 
