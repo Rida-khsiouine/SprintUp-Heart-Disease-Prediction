@@ -6,11 +6,11 @@ This project is the final output of the SprintUp - AI & Machine Learning Foundat
 
 Predict heart disease: classify whether a patient is likely to have heart disease based on clinical and personal health data.
 
-📊 Dataset
+##📊 Dataset
 
 [UCI Heart Disease Dataset](https://archive.ics.uci.edu/ml/datasets/heart+Disease) – 13 clinical features + binary target (presence / absence of heart disease).
 
-🚀 ML Pipeline Overview
+##🚀 ML Pipeline Overview
 
 🔹Data Preprocessing & Cleaning: handle missing values, encode categorical variables, scale features.
 
@@ -26,10 +26,10 @@ Predict heart disease: classify whether a patient is likely to have heart diseas
 
 🔹Model Export & Deployment: exported final trained pipeline using pickle.
 
-📈 Evaluation Metrics
+##📈 Evaluation Metrics
 
 Accuracy, Precision, Recall, F1-score, Confusion Matrix
 
-🙏 Acknowledgments
+##🙏 Thanks To
 
 Thanks to [Sprints](https://sprints.ai/) for the training program and UCI for the publicly available dataset.
