@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -66,3 +67,14 @@ def test_raw_files_match_committed_checksums() -> None:
     paths = verify_all(data_dir)
 
     assert set(paths) == set(Cohort)
+
+
+def test_raw_files_are_not_subject_to_line_ending_conversion() -> None:
+    result = subprocess.run(
+        ["git", "check-attr", "text", "--", "data/raw/processed.cleveland.data"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.stdout.strip().endswith("text: unset")
