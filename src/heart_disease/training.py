@@ -34,7 +34,7 @@ def train_final(
             scoring="roc_auc",
             cv=inner_cv,
             refit=True,
-            n_jobs=1,
+            n_jobs=-1,
             error_score="raise",
         ).fit(development.features, development.target)
         fitted = search.best_estimator_
@@ -53,7 +53,7 @@ def train_final(
             estimator=clone(fitted),
             method="sigmoid",
             cv=calibration_cv,
-            n_jobs=1,
+            n_jobs=-1,
         ).fit(development.features, development.target)
         fitted = Pipeline([("calibrated_model", calibrated)])
 

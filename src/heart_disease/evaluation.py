@@ -211,7 +211,7 @@ def _fit_outer_candidate(
         scoring="roc_auc",
         cv=inner_cv,
         refit=True,
-        n_jobs=1,
+        n_jobs=-1,
         error_score="raise",
     ).fit(features, truth)
     best_parameters = dict(search.best_params_)
@@ -227,7 +227,7 @@ def _fit_outer_candidate(
         estimator=clone(search.best_estimator_),
         method="sigmoid",
         cv=calibration_cv,
-        n_jobs=1,
+        n_jobs=-1,
     ).fit(features, truth)
     return calibrated, best_parameters
 
