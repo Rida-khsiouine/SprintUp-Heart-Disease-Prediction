@@ -11,7 +11,6 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import (
     accuracy_score,
     average_precision_score,
-    balanced_accuracy_score,
     brier_score_loss,
     confusion_matrix,
     f1_score,
@@ -88,17 +87,23 @@ def classification_metrics(
     ).ravel()
 
     both_classes = np.unique(truth_array).size == 2
+    sensitivity = float(
+        recall_score(truth_array, predicted, pos_label=1, zero_division=0)
+    )
+    specificity = float(
+        recall_score(truth_array, predicted, pos_label=0, zero_division=0)
+    )
+    if both_classes:
+        balanced_accuracy = (sensitivity + specificity) / 2
+    elif np.any(truth_array == 1):
+        balanced_accuracy = sensitivity
+    else:
+        balanced_accuracy = specificity
     return {
         "accuracy": float(accuracy_score(truth_array, predicted)),
-        "balanced_accuracy": float(
-            balanced_accuracy_score(truth_array, predicted)
-        ),
-        "sensitivity": float(
-            recall_score(truth_array, predicted, pos_label=1, zero_division=0)
-        ),
-        "specificity": float(
-            recall_score(truth_array, predicted, pos_label=0, zero_division=0)
-        ),
+        "balanced_accuracy": balanced_accuracy,
+        "sensitivity": sensitivity,
+        "specificity": specificity,
         "precision": float(precision_score(truth_array, predicted, zero_division=0)),
         "f1": float(f1_score(truth_array, predicted, zero_division=0)),
         "roc_auc": float(roc_auc_score(truth_array, probability_array))
