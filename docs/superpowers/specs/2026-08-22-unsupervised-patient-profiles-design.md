@@ -39,7 +39,8 @@ Add one focused module:
 
 ```text
 src/heart_disease/
-└── unsupervised.py       preprocessing, PCA, clustering, stability, profiles, transfer
+├── unsupervised.py              preprocessing, PCA, clustering, stability, profiles, transfer
+└── unsupervised_reporting.py    machine-readable outputs and figures for this track
 ```
 
 The module will reuse the documented feature schema and categorical/numerical column definitions from the existing package. Shared preprocessing must have one canonical implementation; the unsupervised track must not copy column lists or validation rules into notebooks.
@@ -119,6 +120,7 @@ reports/unsupervised/
 ├── pca-summary.csv
 ├── pca-loadings.csv
 ├── cluster-selection.csv
+├── hierarchical-comparison.csv
 ├── cluster-profiles.csv
 ├── patient-assignments.csv
 ├── external-transfer.csv
