@@ -36,6 +36,8 @@ from matplotlib import pyplot as plt  # noqa: E402
 
 RESULTS_START = "<!-- GENERATED_RESULTS_START -->"
 RESULTS_END = "<!-- GENERATED_RESULTS_END -->"
+UNSUPERVISED_START = "<!-- GENERATED_UNSUPERVISED_START -->"
+UNSUPERVISED_END = "<!-- GENERATED_UNSUPERVISED_END -->"
 
 
 def _metric_interval(metric: dict[str, object], name: str) -> str:
@@ -102,6 +104,63 @@ def sync_readme_results(readme_path: Path, metrics: dict[str, object]) -> None:
     block = render_results_markdown(metrics)
     readme_path.write_text(
         f"{before}{RESULTS_START}\n{block}\n{RESULTS_END}{after}",
+        encoding="utf-8",
+    )
+
+
+def render_unsupervised_markdown(summary: dict[str, object]) -> str:
+    """Render README evidence solely from unsupervised summary content."""
+
+    lines = [
+        f"_Generated from `reports/unsupervised/summary.json` "
+        f"({summary['profile']} profile). Labels were not used for fitting._",
+        "",
+        "| Exploratory evidence | Value |",
+        "|---|---:|",
+        f"| Selected clusters | {int(summary['selected_k'])} |",
+        f"| PCA components retained | {int(summary['retained_components'])} |",
+        f"| Cumulative variance retained | {float(summary['retained_variance']):.3f} |",
+        f"| Silhouette score | {float(summary['silhouette']):.3f} |",
+        f"| Subsample stability ARI | {float(summary['stability_ari_mean']):.3f} |",
+        f"| K-Means vs Ward ARI | {float(summary['hierarchical_ari']):.3f} |",
+    ]
+    external = summary.get("external_transfer", [])
+    if isinstance(external, list) and external:
+        lines.extend(
+            [
+                "",
+                "| Frozen external transfer | Cluster-proportion distance |",
+                "|---|---:|",
+            ]
+        )
+        for row in external:
+            if isinstance(row, dict):
+                lines.append(
+                    f"| {row['cohort']} | "
+                    f"{float(row['cluster_proportion_total_variation']):.3f} |"
+                )
+    return "\n".join(lines)
+
+
+def sync_readme_unsupervised(
+    readme_path: Path,
+    summary: dict[str, object],
+) -> None:
+    """Replace only the fixed unsupervised README evidence block."""
+
+    content = readme_path.read_text(encoding="utf-8")
+    if (
+        content.count(UNSUPERVISED_START) != 1
+        or content.count(UNSUPERVISED_END) != 1
+    ):
+        raise ValueError(
+            "README must contain exactly one generated-unsupervised marker pair"
+        )
+    before, remainder = content.split(UNSUPERVISED_START, 1)
+    _, after = remainder.split(UNSUPERVISED_END, 1)
+    block = render_unsupervised_markdown(summary)
+    readme_path.write_text(
+        f"{before}{UNSUPERVISED_START}\n{block}\n{UNSUPERVISED_END}{after}",
         encoding="utf-8",
     )
 
