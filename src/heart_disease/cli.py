@@ -11,7 +11,7 @@ from pathlib import Path
 from heart_disease.artifacts import load_artifact, predict_record
 from heart_disease.data import Cohort, fetch_all
 from heart_disease.validation import load_cohort
-from heart_disease.workflow import reproduce_study
+from heart_disease.workflow import analyze_unsupervised, reproduce_study
 
 
 def _fetch(args: argparse.Namespace) -> int:
@@ -36,6 +36,16 @@ def _validate(args: argparse.Namespace) -> int:
 
 def _reproduce(args: argparse.Namespace) -> int:
     paths = reproduce_study(
+        profile=args.profile,
+        data_dir=args.data_dir,
+        output_dir=args.output_dir,
+    )
+    print(json.dumps({name: str(path) for name, path in paths.items()}))
+    return 0
+
+
+def _analyze_unsupervised(args: argparse.Namespace) -> int:
+    paths = analyze_unsupervised(
         profile=args.profile,
         data_dir=args.data_dir,
         output_dir=args.output_dir,
@@ -71,6 +81,20 @@ def _parser() -> argparse.ArgumentParser:
     reproduce.add_argument("--data-dir", type=Path, default=Path("data"))
     reproduce.add_argument("--output-dir", type=Path, default=Path("."))
     reproduce.set_defaults(handler=_reproduce)
+
+    unsupervised = subparsers.add_parser("analyze-unsupervised")
+    unsupervised.add_argument(
+        "--profile",
+        choices=("smoke", "full"),
+        required=True,
+    )
+    unsupervised.add_argument("--data-dir", type=Path, default=Path("data"))
+    unsupervised.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("."),
+    )
+    unsupervised.set_defaults(handler=_analyze_unsupervised)
 
     predict = subparsers.add_parser("predict")
     predict.add_argument("--input", type=Path, required=True)

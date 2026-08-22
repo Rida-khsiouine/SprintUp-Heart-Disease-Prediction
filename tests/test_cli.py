@@ -6,12 +6,13 @@ from pathlib import Path
 import heart_disease.evaluation as evaluation
 from heart_disease.cli import main
 
+PROJECT_ROOT = Path(__file__).parents[1]
+
 
 def test_cli_smoke_reproduce_creates_expected_outputs(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    project_root = Path(__file__).parents[1]
     monkeypatch.setattr(
         evaluation,
         "CANDIDATE_MODELS",
@@ -24,7 +25,7 @@ def test_cli_smoke_reproduce_creates_expected_outputs(
             "--profile",
             "smoke",
             "--data-dir",
-            str(project_root / "data"),
+            str(PROJECT_ROOT / "data"),
             "--output-dir",
             str(tmp_path),
         ]
@@ -40,3 +41,35 @@ def test_cli_smoke_reproduce_creates_expected_outputs(
     )
     assert metrics["profile"] == "smoke"
     assert metrics["selection"]["model_name"] == "logistic"
+    assert (tmp_path / "reports" / "unsupervised" / "summary.json").is_file()
+    assert (
+        tmp_path / "reports" / "unsupervised" / "external-transfer.csv"
+    ).is_file()
+
+
+def test_cli_smoke_unsupervised_creates_expected_outputs(
+    tmp_path: Path,
+) -> None:
+    exit_code = main(
+        [
+            "analyze-unsupervised",
+            "--profile",
+            "smoke",
+            "--data-dir",
+            str(PROJECT_ROOT / "data"),
+            "--output-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (
+        tmp_path / "reports" / "unsupervised" / "summary.json"
+    ).is_file()
+    assert (
+        tmp_path
+        / "reports"
+        / "unsupervised"
+        / "figures"
+        / "pca-clusters.png"
+    ).is_file()

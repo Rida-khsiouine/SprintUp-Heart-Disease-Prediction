@@ -3,9 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from heart_disease.evaluation import Selection
+from heart_disease.models import ExperimentConfig
 from heart_disease.reporting import (
     RESULTS_END,
     RESULTS_START,
+    build_experiment_manifest,
     render_results_markdown,
 )
 
@@ -46,6 +49,40 @@ def test_experiment_manifest_contains_required_provenance() -> None:
         "switzerland",
         "va",
     }
+
+
+def test_manifest_builder_records_unsupervised_boundaries() -> None:
+    manifest = build_experiment_manifest(
+        profile="smoke",
+        config=ExperimentConfig(
+            outer_splits=2,
+            outer_repeats=1,
+            inner_splits=2,
+        ),
+        data_manifest=json.loads(
+            (PROJECT_ROOT / "data" / "manifest.json").read_text(
+                encoding="utf-8"
+            )
+        ),
+        artifact_metadata=json.loads(
+            (PROJECT_ROOT / "artifacts" / "metadata.json").read_text(
+                encoding="utf-8"
+            )
+        ),
+        selection=Selection("logistic", "test", 0.5, 0.4),
+        parameters={},
+        unsupervised_summary={
+            "config": {"seed": 42},
+            "selected_k": 2,
+            "retained_components": 7,
+            "target_used_for_fit": False,
+            "external_used_for_selection": False,
+        },
+    )
+
+    assert manifest["partitions"]["unsupervised_fit"] == ["cleveland"]
+    assert manifest["unsupervised"]["target_used_for_fit"] is False
+    assert manifest["unsupervised"]["external_used_for_selection"] is False
 
 
 def test_model_card_contains_non_medical_disclaimer() -> None:

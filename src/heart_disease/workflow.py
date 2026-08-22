@@ -21,11 +21,19 @@ from heart_disease.reporting import (
     build_experiment_manifest,
     generate_evidence_outputs,
     sync_readme_results,
+    sync_readme_unsupervised,
 )
 from heart_disease.training import train_final
-from heart_disease.validation import load_cohort
+from heart_disease.unsupervised import (
+    UnsupervisedConfig,
+    describe_unsupervised_profiles,
+    fit_unsupervised_profiles,
+)
+from heart_disease.unsupervised_reporting import write_unsupervised_reports
+from heart_disease.validation import CohortData, load_cohort
 
 Profile = Literal["smoke", "full"]
+EXTERNAL_COHORTS = (Cohort.HUNGARY, Cohort.SWITZERLAND, Cohort.VA)
 
 
 def config_for_profile(profile: Profile) -> ExperimentConfig:
@@ -39,6 +47,63 @@ def config_for_profile(profile: Profile) -> ExperimentConfig:
     if profile == "full":
         return ExperimentConfig()
     raise ValueError(f"Unknown reproduction profile: {profile}")
+
+
+def unsupervised_config_for_profile(profile: Profile) -> UnsupervisedConfig:
+    """Return the deterministic unsupervised configuration for a profile."""
+
+    if profile == "smoke":
+        return UnsupervisedConfig(stability_iterations=5)
+    if profile == "full":
+        return UnsupervisedConfig()
+    raise ValueError(f"Unknown reproduction profile: {profile}")
+
+
+def _analyze_unsupervised_cohorts(
+    *,
+    profile: Profile,
+    development: CohortData,
+    external: tuple[CohortData, ...],
+    output_dir: Path,
+) -> dict[str, Path]:
+    config = unsupervised_config_for_profile(profile)
+    fitted = fit_unsupervised_profiles(development.features, config)
+    study = describe_unsupervised_profiles(
+        fitted,
+        development,
+        external,
+        config,
+    )
+    paths = write_unsupervised_reports(
+        fitted=fitted,
+        study=study,
+        profile=profile,
+        config=config,
+        reports_dir=output_dir / "reports",
+    )
+    readme_path = output_dir / "README.md"
+    if readme_path.is_file():
+        summary = json.loads(paths["summary"].read_text(encoding="utf-8"))
+        sync_readme_unsupervised(readme_path, summary)
+    return paths
+
+
+def analyze_unsupervised(
+    *,
+    profile: Profile,
+    data_dir: Path,
+    output_dir: Path,
+) -> dict[str, Path]:
+    """Run only the unsupervised track from validated raw cohorts."""
+
+    development = load_cohort(Cohort.CLEVELAND, data_dir)
+    external = tuple(load_cohort(cohort, data_dir) for cohort in EXTERNAL_COHORTS)
+    return _analyze_unsupervised_cohorts(
+        profile=profile,
+        development=development,
+        external=external,
+        output_dir=output_dir,
+    )
 
 
 def _metric_with_intervals(
@@ -116,7 +181,7 @@ def reproduce_study(
     )
     external_cohorts = tuple(
         load_cohort(cohort, data_dir)
-        for cohort in (Cohort.HUNGARY, Cohort.SWITZERLAND, Cohort.VA)
+        for cohort in EXTERNAL_COHORTS
     )
     external_metrics = evaluate_external(
         fitted, external_cohorts, thresholds, config
@@ -204,6 +269,15 @@ def reproduce_study(
     artifact_metadata = json.loads(
         (artifact_dir / "metadata.json").read_text(encoding="utf-8")
     )
+    unsupervised_paths = _analyze_unsupervised_cohorts(
+        profile=profile,
+        development=development,
+        external=external_cohorts,
+        output_dir=output_dir,
+    )
+    unsupervised_summary = json.loads(
+        unsupervised_paths["summary"].read_text(encoding="utf-8")
+    )
     manifest = build_experiment_manifest(
         profile=profile,
         config=config,
@@ -211,6 +285,7 @@ def reproduce_study(
         artifact_metadata=artifact_metadata,
         selection=selection,
         parameters=parameters,
+        unsupervised_summary=unsupervised_summary,
     )
     manifest_path = reports_dir / "experiment-manifest.json"
     manifest_path.write_text(
@@ -235,5 +310,9 @@ def reproduce_study(
         "metrics": metrics_path,
         "external_validation": external_path,
         "experiment_manifest": manifest_path,
+        **{
+            f"unsupervised_{name}": path
+            for name, path in unsupervised_paths.items()
+        },
         **evidence_paths,
     }

@@ -325,6 +325,7 @@ def build_experiment_manifest(
     artifact_metadata: dict[str, object],
     selection: Selection,
     parameters: dict[str, object],
+    unsupervised_summary: dict[str, object] | None = None,
 ) -> dict[str, object]:
     """Build immutable provenance without wall-clock timestamps."""
 
@@ -335,7 +336,7 @@ def build_experiment_manifest(
         text=True,
     ).stdout.strip()
     cohorts = data_manifest["cohorts"]
-    return {
+    manifest: dict[str, object] = {
         "profile": profile,
         "git_commit": commit or "unavailable",
         "data_sha256": {
@@ -363,3 +364,22 @@ def build_experiment_manifest(
             "screening_value": selection.screening_threshold,
         },
     }
+    if unsupervised_summary is not None:
+        partitions = manifest["partitions"]
+        if not isinstance(partitions, dict):
+            raise TypeError("Manifest partitions must be a mapping")
+        partitions["unsupervised_fit"] = ["cleveland"]
+        manifest["unsupervised"] = {
+            "target_used_for_fit": bool(
+                unsupervised_summary["target_used_for_fit"]
+            ),
+            "external_used_for_selection": bool(
+                unsupervised_summary["external_used_for_selection"]
+            ),
+            "config": unsupervised_summary["config"],
+            "selected_k": int(unsupervised_summary["selected_k"]),
+            "retained_components": int(
+                unsupervised_summary["retained_components"]
+            ),
+        }
+    return manifest
