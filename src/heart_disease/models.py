@@ -41,7 +41,9 @@ class ExperimentConfig:
     min_subgroup_size: int = 25
 
 
-def _preprocessor() -> ColumnTransformer:
+def build_preprocessor() -> ColumnTransformer:
+    """Create an unfitted transformer for the canonical 13 raw features."""
+
     numerical = Pipeline(
         [
             ("imputer", SimpleImputer(strategy="median")),
@@ -89,7 +91,7 @@ def build_pipeline(model_name: ModelName, seed: int) -> Pipeline:
     else:
         raise ValueError(f"Unsupported model: {model_name}")
 
-    return Pipeline([("preprocess", _preprocessor()), ("model", estimator)])
+    return Pipeline([("preprocess", build_preprocessor()), ("model", estimator)])
 
 
 def parameter_grid(model_name: ModelName) -> dict[str, list[object]]:

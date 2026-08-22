@@ -9,6 +9,7 @@ from sklearn.utils.validation import check_is_fitted
 from heart_disease.models import (
     NUMERICAL_COLUMNS,
     build_pipeline,
+    build_preprocessor,
     parameter_grid,
 )
 
@@ -41,6 +42,11 @@ def test_pipeline_is_unfitted_when_created() -> None:
 
     with pytest.raises(NotFittedError):
         check_is_fitted(pipeline)
+
+
+def test_build_preprocessor_is_unfitted() -> None:
+    with pytest.raises(NotFittedError):
+        check_is_fitted(build_preprocessor())
 
 
 def test_scaler_statistics_come_only_from_training_rows() -> None:
