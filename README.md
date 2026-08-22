@@ -35,18 +35,18 @@ flowchart LR
 ROC-AUC is the primary selection metric. Brackets are patient-bootstrap 95% intervals; candidate `±` values are outer-fold standard deviations. The secondary screening threshold is selected on averaged Cleveland out-of-fold predictions and never adjusted using external labels.
 
 <!-- GENERATED_RESULTS_START -->
-_Generated from `reports/metrics.json` (smoke profile). Intervals are 95% stratified patient-bootstrap intervals._
+_Generated from `reports/metrics.json` (full profile). Intervals are 95% stratified patient-bootstrap intervals._
 
 | Evidence | ROC-AUC | Balanced accuracy | Brier score |
 |---|---:|---:|---:|
 | Cleveland nested CV — `dummy` | 0.500 ± 0.000 | 0.500 | 0.248 |
-| Cleveland nested CV — `logistic` | 0.912 ± 0.019 | 0.835 | 0.120 |
-| Cleveland nested CV — `gradient_boosting` | 0.906 ± 0.017 | 0.811 | 0.131 |
-| Cleveland nested CV — `random_forest` | 0.915 ± 0.018 | 0.830 | 0.121 |
-| Cleveland selected OOF — `logistic` | 0.908 [0.868, 0.942] | 0.835 [0.800, 0.887] | 0.120 [0.093, 0.145] |
-| External — hungary | 0.896 [0.858, 0.931] | 0.784 [0.728, 0.830] | 0.124 [0.106, 0.148] |
-| External — switzerland | 0.752 [0.630, 0.871] | 0.659 [0.575, 0.733] | 0.333 [0.305, 0.379] |
-| External — va | 0.707 [0.639, 0.755] | 0.634 [0.566, 0.689] | 0.271 [0.250, 0.293] |
+| Cleveland nested CV — `logistic` | 0.917 ± 0.032 | 0.852 | 0.116 |
+| Cleveland nested CV — `gradient_boosting` | 0.903 ± 0.041 | 0.829 | 0.124 |
+| Cleveland nested CV — `random_forest` | 0.914 ± 0.034 | 0.830 | 0.119 |
+| Cleveland selected OOF — `logistic` | 0.916 [0.882, 0.946] | 0.852 [0.810, 0.894] | 0.114 [0.093, 0.136] |
+| External — hungary | 0.896 [0.854, 0.933] | 0.784 [0.732, 0.833] | 0.124 [0.105, 0.144] |
+| External — switzerland | 0.752 [0.574, 0.898] | 0.659 [0.521, 0.752] | 0.333 [0.288, 0.377] |
+| External — va | 0.707 [0.623, 0.781] | 0.634 [0.561, 0.702] | 0.271 [0.238, 0.305] |
 <!-- GENERATED_RESULTS_END -->
 
 See [the model card](docs/model-card.md) for interpretation limits and [the generated figures](reports/figures) for ROC, precision–recall, calibration, confusion matrices, missingness, cohort shift, and feature stability.
