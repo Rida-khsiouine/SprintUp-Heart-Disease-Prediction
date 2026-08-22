@@ -65,6 +65,36 @@ def _interval(values: list[float]) -> tuple[float, float]:
     return float(low), float(high)
 
 
+def bootstrap_metric_intervals(
+    truth: np.ndarray,
+    probability: np.ndarray,
+    *,
+    threshold: float,
+    iterations: int,
+    seed: int,
+) -> dict[str, dict[str, float]]:
+    """Return reproducible stratified patient-bootstrap metric intervals."""
+
+    truth_array = np.asarray(truth, dtype=int)
+    probability_array = np.asarray(probability, dtype=float)
+    samples = _stratified_bootstrap_indices(
+        truth_array, iterations=iterations, seed=seed
+    )
+    bootstrap_metrics = [
+        classification_metrics(
+            truth_array[indices], probability_array[indices], threshold=threshold
+        )
+        for indices in samples
+    ]
+    intervals = {}
+    for metric in INTERVAL_METRICS:
+        low, high = _interval(
+            [float(sample[metric]) for sample in bootstrap_metrics]
+        )
+        intervals[metric] = {"low": low, "high": high}
+    return intervals
+
+
 def evaluate_external(
     fitted_pipeline: Pipeline,
     cohorts: tuple[CohortData, ...],
@@ -216,13 +246,15 @@ def compare_cohorts(
 
     for feature in CATEGORICAL_COLUMNS:
         development_distribution = (
-            development.features[feature]
+            pd.to_numeric(development.features[feature])
+            .astype("Float64")
             .astype("string")
             .fillna("__MISSING__")
             .value_counts(normalize=True)
         )
         external_distribution = (
-            external.features[feature]
+            pd.to_numeric(external.features[feature])
+            .astype("Float64")
             .astype("string")
             .fillna("__MISSING__")
             .value_counts(normalize=True)

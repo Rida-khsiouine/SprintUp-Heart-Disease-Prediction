@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -20,6 +20,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.model_selection import GridSearchCV, RepeatedStratifiedKFold, StratifiedKFold
+from sklearn.pipeline import Pipeline
 
 from heart_disease.models import (
     ExperimentConfig,
@@ -61,6 +62,7 @@ class CandidateResult:
     fold_metrics: pd.DataFrame
     predictions: tuple[FoldPrediction, ...]
     best_parameters: tuple[dict[str, object], ...]
+    feature_importances: pd.DataFrame = field(default_factory=pd.DataFrame)
 
 
 @dataclass(frozen=True)
@@ -230,6 +232,48 @@ def _fit_outer_candidate(
     return calibrated, best_parameters
 
 
+def _pipeline_importances(pipeline: Pipeline) -> pd.DataFrame:
+    if "preprocess" not in pipeline.named_steps or "model" not in pipeline.named_steps:
+        return pd.DataFrame(columns=["feature", "importance"])
+    preprocess = pipeline.named_steps["preprocess"]
+    model = pipeline.named_steps["model"]
+    feature_names = preprocess.get_feature_names_out()
+    if hasattr(model, "coef_"):
+        values = np.asarray(model.coef_)[0]
+    elif hasattr(model, "feature_importances_"):
+        values = np.asarray(model.feature_importances_)
+    else:
+        return pd.DataFrame(columns=["feature", "importance"])
+    return pd.DataFrame({"feature": feature_names, "importance": values})
+
+
+def _feature_importances(fitted: object) -> pd.DataFrame:
+    if not isinstance(fitted, Pipeline):
+        if isinstance(fitted, CalibratedClassifierCV):
+            frames = [
+                _pipeline_importances(calibrated.estimator)
+                for calibrated in fitted.calibrated_classifiers_
+            ]
+        else:
+            frames = []
+    elif "calibrated_model" in fitted.named_steps:
+        calibrated_model = fitted.named_steps["calibrated_model"]
+        frames = [
+            _pipeline_importances(calibrated.estimator)
+            for calibrated in calibrated_model.calibrated_classifiers_
+        ]
+    else:
+        frames = [_pipeline_importances(fitted)]
+    frames = [frame for frame in frames if not frame.empty]
+    if not frames:
+        return pd.DataFrame(columns=["feature", "importance"])
+    return (
+        pd.concat(frames, ignore_index=True)
+        .groupby("feature", as_index=False, sort=True)["importance"]
+        .mean()
+    )
+
+
 def run_nested_cv(
     data: CohortData,
     config: ExperimentConfig,
@@ -249,6 +293,9 @@ def run_nested_cv(
         model_name: [] for model_name in CANDIDATE_MODELS
     }
     parameters: dict[ModelName, list[dict[str, object]]] = {
+        model_name: [] for model_name in CANDIDATE_MODELS
+    }
+    feature_importances: dict[ModelName, list[pd.DataFrame]] = {
         model_name: [] for model_name in CANDIDATE_MODELS
     }
 
@@ -274,6 +321,11 @@ def run_nested_cv(
                 {"repeat": repeat, "fold": fold, **metrics}
             )
             parameters[model_name].append(best_parameters)
+            fold_importances = _feature_importances(fitted)
+            if not fold_importances.empty:
+                feature_importances[model_name].append(
+                    fold_importances.assign(repeat=repeat, fold=fold)
+                )
             predictions[model_name].extend(
                 FoldPrediction(
                     patient_id=int(patient_position),
@@ -293,6 +345,11 @@ def run_nested_cv(
             fold_metrics=pd.DataFrame(metric_rows[model_name]),
             predictions=tuple(predictions[model_name]),
             best_parameters=tuple(parameters[model_name]),
+            feature_importances=pd.concat(
+                feature_importances[model_name], ignore_index=True
+            )
+            if feature_importances[model_name]
+            else pd.DataFrame(columns=["feature", "importance", "repeat", "fold"]),
         )
         for model_name in CANDIDATE_MODELS
     }

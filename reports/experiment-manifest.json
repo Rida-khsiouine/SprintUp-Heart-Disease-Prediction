@@ -1,0 +1,50 @@
+{
+  "artifact_sha256": "443cf6971fa5daaecab29ca4fed7241aab608c89d0e3bda60639dc96329fa2ba",
+  "data_sha256": {
+    "cleveland": "a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8",
+    "hungary": "d1ad108f785768cd3d7e82dc522e6f5a61eea93cccfb3a46ee8076f73fc3d796",
+    "switzerland": "834a405ccf5b66ab4056bb77794adc8df0b7125186454c0a1d002d33c6c3b314",
+    "va": "e7c93d8d0d2acdadfa4c5e8de768e2191e7f618b952e29623f1f0d5949ff6b8f"
+  },
+  "git_commit": "632e9e8e180bdb2a88cf1cc924fbd4998ca5ef73",
+  "package_versions": {
+    "heart_disease": "2.0.0",
+    "numpy": "2.5.2",
+    "pandas": "2.3.3",
+    "python": "3.12.10",
+    "scikit_learn": "1.7.2",
+    "skops": "0.14.0"
+  },
+  "parameters": {
+    "model__C": 0.1,
+    "model__class_weight": "balanced"
+  },
+  "partitions": {
+    "development": [
+      "cleveland"
+    ],
+    "external_validation": [
+      "hungary",
+      "switzerland",
+      "va"
+    ],
+    "inner_tuning": "2 stratified folds",
+    "outer_evaluation": "1x2 repeated stratified folds"
+  },
+  "profile": "smoke",
+  "seeds": {
+    "bootstrap_iterations": 20,
+    "inner_splits": 2,
+    "min_subgroup_size": 25,
+    "outer_repeats": 1,
+    "outer_splits": 2,
+    "screening_recall": 0.85,
+    "seed": 42
+  },
+  "selected_model": "logistic",
+  "threshold_rule": {
+    "default": 0.5,
+    "screening": "highest threshold maximizing specificity subject to Cleveland out-of-fold recall >= 0.85",
+    "screening_value": 0.4282161466802045
+  }
+}

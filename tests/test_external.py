@@ -145,3 +145,24 @@ def test_shift_report_includes_missingness_and_prevalence() -> None:
     ].iloc[0]
     assert cholesterol["external_value"] == pytest.approx(10 / 30)
     assert cholesterol["shift_value"] == pytest.approx(10 / 30)
+
+
+def test_shift_treats_integer_and_float_category_encodings_as_equal() -> None:
+    development = _cohort(Cohort.CLEVELAND)
+    external = _cohort(Cohort.HUNGARY)
+    float_features = development.features.copy()
+    float_features["sex"] = float_features["sex"].astype(float)
+    development = CohortData(
+        development.cohort,
+        float_features,
+        development.target,
+        development.raw_target,
+    )
+
+    report = compare_cohorts(development, external)
+
+    sex_shift = report[
+        (report["measure"] == "total_variation_distance")
+        & (report["feature"] == "sex")
+    ].iloc[0]
+    assert sex_shift["shift_value"] == pytest.approx(0.0)
