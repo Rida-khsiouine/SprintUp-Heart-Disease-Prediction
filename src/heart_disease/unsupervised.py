@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+from scipy.cluster.hierarchy import cut_tree, linkage
 from sklearn.cluster import KMeans
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
@@ -14,6 +15,7 @@ from sklearn.metrics import (
     davies_bouldin_score,
     silhouette_score,
 )
+from sklearn.metrics.cluster import adjusted_rand_score
 
 from heart_disease.models import build_preprocessor
 from heart_disease.validation import FEATURE_COLUMNS
@@ -57,6 +59,15 @@ class KMeansSelection:
     selected_k: int
     assignments: np.ndarray
     cluster_selection: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class HierarchicalComparison:
+    """Ward linkage, flat assignments, and agreement with K-Means."""
+
+    linkage_matrix: np.ndarray
+    assignments: np.ndarray
+    metrics: pd.DataFrame
 
 
 def validate_unsupervised_inputs(
@@ -251,4 +262,117 @@ def fit_kmeans_candidates(
         selected_k=selected_k,
         assignments=assignments,
         cluster_selection=cluster_selection,
+    )
+
+
+def estimate_cluster_stability(
+    representation: PCARepresentation,
+    selection: KMeansSelection,
+    config: UnsupervisedConfig,
+) -> pd.DataFrame:
+    """Measure selected-cluster agreement over deterministic subsamples."""
+
+    generator = np.random.default_rng(config.seed)
+    sample_size = int(
+        np.floor(
+            len(representation.retained) * config.stability_sample_fraction
+        )
+    )
+    rows: list[dict[str, float | int]] = []
+    for iteration in range(config.stability_iterations):
+        indices = np.sort(
+            generator.choice(
+                len(representation.retained),
+                size=sample_size,
+                replace=False,
+            )
+        )
+        subsample_model = KMeans(
+            n_clusters=selection.selected_k,
+            random_state=config.seed + iteration,
+            n_init=50,
+        )
+        subsample_assignments = subsample_model.fit_predict(
+            representation.retained[indices]
+        )
+        if np.unique(subsample_assignments).size != selection.selected_k:
+            raise UnsupervisedValidationError(
+                "Stability fit produced too few populated clusters"
+            )
+        rows.append(
+            {
+                "iteration": iteration,
+                "sample_size": sample_size,
+                "adjusted_rand_index": float(
+                    adjusted_rand_score(
+                        selection.assignments[indices],
+                        subsample_assignments,
+                    )
+                ),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _canonicalize_assignments(
+    values: np.ndarray,
+    assignments: np.ndarray,
+) -> np.ndarray:
+    labels = np.unique(assignments)
+    centers = {
+        int(label): tuple(values[assignments == label].mean(axis=0))
+        for label in labels
+    }
+    order = sorted((int(label) for label in labels), key=centers.__getitem__)
+    mapping = {old: new for new, old in enumerate(order)}
+    return np.asarray([mapping[int(label)] for label in assignments], dtype=int)
+
+
+def fit_hierarchical_comparison(
+    representation: PCARepresentation,
+    selection: KMeansSelection,
+) -> HierarchicalComparison:
+    """Compare one Ward hierarchy with the frozen K-Means partition."""
+
+    linkage_matrix = linkage(
+        representation.retained,
+        method="ward",
+        optimal_ordering=True,
+    )
+    raw_assignments = cut_tree(
+        linkage_matrix,
+        n_clusters=[selection.selected_k],
+    ).reshape(-1)
+    assignments = _canonicalize_assignments(
+        representation.retained,
+        raw_assignments,
+    )
+    if np.unique(assignments).size != selection.selected_k:
+        raise UnsupervisedValidationError(
+            "Hierarchical fit produced too few populated clusters"
+        )
+
+    agreement = float(
+        adjusted_rand_score(selection.assignments, assignments)
+    )
+    contingency = pd.crosstab(
+        pd.Series(selection.assignments, name="kmeans_cluster"),
+        pd.Series(assignments, name="hierarchical_cluster"),
+        dropna=False,
+    )
+    rows = [
+        {
+            "selected_k": selection.selected_k,
+            "adjusted_rand_index": agreement,
+            "kmeans_cluster": int(kmeans_cluster),
+            "hierarchical_cluster": int(hierarchical_cluster),
+            "count": int(contingency.loc[kmeans_cluster, hierarchical_cluster]),
+        }
+        for kmeans_cluster in contingency.index
+        for hierarchical_cluster in contingency.columns
+    ]
+    return HierarchicalComparison(
+        linkage_matrix=np.asarray(linkage_matrix, dtype=float),
+        assignments=assignments,
+        metrics=pd.DataFrame(rows),
     )

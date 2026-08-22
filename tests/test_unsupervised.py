@@ -9,6 +9,8 @@ from heart_disease.data import Cohort
 from heart_disease.unsupervised import (
     UnsupervisedConfig,
     UnsupervisedValidationError,
+    estimate_cluster_stability,
+    fit_hierarchical_comparison,
     fit_kmeans_candidates,
     fit_pca_representation,
     select_cluster_count,
@@ -154,3 +156,46 @@ def test_collapsed_candidate_is_rejected(monkeypatch: pytest.MonkeyPatch) -> Non
 
     with pytest.raises(UnsupervisedValidationError, match="populated clusters"):
         fit_kmeans_candidates(representation, config)
+
+
+def test_stability_is_reproducible_with_seed() -> None:
+    config = UnsupervisedConfig(
+        seed=23,
+        k_values=(2, 3),
+        stability_iterations=8,
+    )
+    representation = fit_pca_representation(_features(100), config)
+    selection = fit_kmeans_candidates(representation, config)
+
+    first = estimate_cluster_stability(representation, selection, config)
+    second = estimate_cluster_stability(representation, selection, config)
+
+    pd.testing.assert_frame_equal(first, second)
+    assert list(first.columns) == [
+        "iteration",
+        "sample_size",
+        "adjusted_rand_index",
+    ]
+    assert len(first) == 8
+
+
+def test_hierarchical_comparison_uses_selected_k() -> None:
+    config = UnsupervisedConfig(
+        k_values=(2, 3),
+        stability_iterations=2,
+    )
+    representation = fit_pca_representation(_features(80), config)
+    selection = fit_kmeans_candidates(representation, config)
+
+    comparison = fit_hierarchical_comparison(representation, selection)
+
+    assert np.unique(comparison.assignments).size == selection.selected_k
+    assert comparison.linkage_matrix.shape == (
+        len(representation.retained) - 1,
+        4,
+    )
+    agreement = float(comparison.metrics.loc[0, "adjusted_rand_index"])
+    assert -1 <= agreement <= 1
+    assert int(comparison.metrics["count"].sum()) == len(
+        representation.retained
+    )
