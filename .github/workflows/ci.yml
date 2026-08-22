@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feat/recruiter-ready-rebuild]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Sync frozen environment
+        run: uv sync --frozen --all-extras
+
+      - name: Validate immutable datasets
+        run: uv run heart-disease validate-data
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Test with coverage
+        run: uv run pytest -m "not full" --cov=heart_disease --cov-report=term-missing --cov-report=xml
+
+      - name: Verify safe artifact round trip
+        run: uv run pytest tests/test_artifacts.py::test_artifact_round_trip_preserves_probability -v
+
+      - name: Execute notebook from a clean kernel
+        run: uv run pytest tests/test_notebook.py -v
+
+      - name: Reproduce deterministic smoke evidence
+        run: uv run heart-disease reproduce --profile smoke --output-dir ci-output
+
+      - name: Predict from the generated artifact
+        run: >-
+          uv run heart-disease predict
+          --artifact ci-output/artifacts/model.skops
+          --metadata ci-output/artifacts/metadata.json
+          --input tests/fixtures/patient.json
+
+  full-reproduction:
+    name: Full nested reproduction
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Sync frozen environment
+        run: uv sync --frozen --all-extras
+
+      - name: Run full nested evaluation and 2,000 bootstraps
+        run: uv run heart-disease reproduce --profile full --output-dir full-output
+
+      - name: Verify full artifact inference
+        run: >-
+          uv run heart-disease predict
+          --artifact full-output/artifacts/model.skops
+          --metadata full-output/artifacts/metadata.json
+          --input tests/fixtures/patient.json
+
+      - name: Confirm required full outputs
+        run: |
+          test -s full-output/reports/metrics.json
+          test -s full-output/reports/external-validation.csv
+          test -s full-output/reports/experiment-manifest.json
+          test -s full-output/artifacts/model.skops
