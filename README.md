@@ -10,6 +10,19 @@ The answer is mixed—and reported without hiding the weak cohort. Logistic regr
 
 > Educational portfolio project only. It is not medical advice, is not clinically validated, and must not be used for diagnosis or care decisions.
 
+## Start here
+
+| Recruiter question | Fastest path |
+|---|---|
+| What did the project find? | Read the [supervised results](#results), then the [exploratory unsupervised evidence](#unsupervised-patient-profile-evidence). |
+| How rigorous is the ML work? | Follow the eight-stage [project guide](docs/project-guide.md) and inspect the [model card](docs/model-card.md). |
+| Where are the generated numbers and figures? | Use the annotated [report index](reports/README.md); the notebook is only a report consumer. |
+| Can the trained model make a prediction? | Inspect the raw-record [`predict_record` contract](src/heart_disease/artifacts.py) and run the CLI example below. |
+
+- **Supervised track:** heart-disease prediction, nested tuning, threshold selection, and external validation live in [`evaluation.py`](src/heart_disease/evaluation.py).
+- **Unsupervised track:** label-isolated PCA, K-Means stability, Ward comparison, and frozen cohort transfer live in [`unsupervised.py`](src/heart_disease/unsupervised.py).
+- **Engineering track:** provenance, reproducibility, safe serialization, inference, and CI are mapped in the [project guide](docs/project-guide.md).
+
 ## What this demonstrates
 
 - Leakage-safe preprocessing, tuning, and calibration inside training folds.
@@ -51,6 +64,16 @@ _Generated from `reports/metrics.json` (full profile). Intervals are 95% stratif
 
 See [the model card](docs/model-card.md) for interpretation limits and [the generated figures](reports/figures) for ROC, precision–recall, calibration, confusion matrices, missingness, cohort shift, and feature stability.
 
+## Unsupervised patient-profile evidence
+
+This scientifically separate track asks whether natural patient groups appear in Cleveland's feature space and whether those frozen groups transfer to the other hospitals. Disease labels are excluded from preprocessing, PCA, cluster-count selection, and fitting; they are joined only for post-hoc description. These exploratory clusters are not diagnoses or clinical subtypes.
+
+<!-- GENERATED_UNSUPERVISED_START -->
+_Generate this block with `heart-disease analyze-unsupervised --profile full`._
+<!-- GENERATED_UNSUPERVISED_END -->
+
+The complete selection, stability, hierarchy, profile, and transfer evidence is indexed in [`reports/README.md`](reports/README.md).
+
 ## Reproduce it
 
 Requirements: Python 3.11 or 3.12 and [uv](https://docs.astral.sh/uv/).
@@ -58,6 +81,7 @@ Requirements: Python 3.11 or 3.12 and [uv](https://docs.astral.sh/uv/).
 ```powershell
 uv sync --frozen --all-extras
 uv run heart-disease validate-data
+uv run heart-disease analyze-unsupervised --profile smoke
 uv run heart-disease reproduce --profile smoke
 uv run heart-disease predict --input tests/fixtures/patient.json
 ```

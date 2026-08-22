@@ -26,3 +26,5 @@ def test_notebook_executes_from_clean_kernel(tmp_path: Path) -> None:
     )
     assert ".fit(" not in code
     assert "GridSearchCV" not in code
+    assert "reports/unsupervised/summary.json" in code
+    assert "reports/unsupervised/cluster-selection.csv" in code

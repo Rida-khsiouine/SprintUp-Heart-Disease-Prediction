@@ -25,6 +25,7 @@ That process does not prove that AI replaces a senior ML engineer. It demonstrat
 - Commit checksum-verified raw snapshots with UCI attribution.
 - Use `skops` with explicit unknown-type handling, canonical deterministic archives, and metadata integrity checks.
 - Generate the README results, tables, figures, and notebook from shared report objects.
+- Replace the legacy disconnected PCA/clustering demonstration with a question-driven, label-isolated analysis: fit patient profiles on Cleveland only, quantify stability, compare Ward hierarchy, and test frozen transfer to other hospitals.
 - State weak external results, subgroup power limits, dataset age, and non-clinical status prominently.
 
 ## Suggestions rejected or deferred
@@ -34,6 +35,7 @@ That process does not prove that AI replaces a senior ML engineer. It demonstrat
 - **Combine all hospitals before splitting.** Rejected because it erases the external-generalization question.
 - **SMOTE before cross-validation.** Rejected for this milestone; it was unnecessary and easy to leak across folds.
 - **Deep learning.** Rejected as unjustified for 303 development records and tabular features.
+- **Keep PCA and clustering merely to satisfy an algorithm checklist.** Rejected because the old analysis was disconnected from a research question and mixed exploratory output with unclear evaluation. The replacement was accepted only with feature-only fitting APIs, deterministic selection, stability tests, post-hoc label joins, frozen external transfer, and explicit mixed-data limitations.
 - **Interactive app, cloud deployment, and Docker.** Deferred until the scientific and artifact contracts pass. A future app can call `predict_record` without changing training.
 - **Clinical recommendation language.** Rejected because the data and evaluation do not support it.
 
@@ -49,6 +51,7 @@ Verification is encoded in tests and reproducible commands rather than trust in 
 - external single-class and underpowered-subgroup failure behavior;
 - safe artifact round-trip and malicious-type rejection;
 - README/report synchronization and clean-kernel notebook execution;
+- target-column rejection, Cleveland-only unsupervised fitting, deterministic PCA/K-Means results, cluster-stability reproducibility, and one-to-one frozen external assignment;
 - Ruff, coverage, Windows/Linux CI, and a manual full reproduction job.
 
 ## Remaining limitations

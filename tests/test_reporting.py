@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from heart_disease.evaluation import Selection
@@ -104,3 +105,35 @@ def test_ai_report_discloses_ai_authorship_and_verification() -> None:
     assert "human" in report.lower()
     assert "verification" in report.lower()
     assert "does not prove" in report.lower()
+
+
+def test_project_guide_links_resolve_to_existing_paths() -> None:
+    guide_path = PROJECT_ROOT / "docs" / "project-guide.md"
+    guide = guide_path.read_text(encoding="utf-8")
+    linked_paths = re.findall(r"\]\((?!https?://)([^)#]+)", guide)
+
+    assert linked_paths
+    assert all((guide_path.parent / path).resolve().exists() for path in linked_paths)
+
+
+def test_readme_exposes_recruiter_paths_and_three_tracks() -> None:
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "## Start here" in readme
+    assert "Supervised track" in readme
+    assert "Unsupervised track" in readme
+    assert "Engineering track" in readme
+    assert "docs/project-guide.md" in readme
+    assert "reports/README.md" in readme
+
+
+def test_model_card_limits_cluster_claims() -> None:
+    model_card = (PROJECT_ROOT / "docs" / "model-card.md").read_text(
+        encoding="utf-8"
+    )
+    normalized = model_card.lower()
+
+    assert "exploratory" in normalized
+    assert "cluster numbers" in normalized
+    assert "not clinical" in normalized
+    assert "euclidean" in normalized

@@ -28,6 +28,14 @@ The external results show meaningful **distribution shift** and a material decli
 
 Sex and broad age bands were predeclared. A subgroup below 25 patients is marked `underpowered`; only counts are shown and no performance claim is made. These limited slices are not a fairness certification. The dataset’s binary sex coding, historical collection, missingness, and small sample sizes prevent a comprehensive fairness assessment.
 
+## Exploratory unsupervised analysis
+
+The separate PCA and clustering track explores whether patient groups appear in Cleveland's 13-feature representation. Disease labels are not used to fit preprocessing, PCA, K-Means, the selected cluster count, centroids, or Ward linkage. Target prevalence is joined only after those choices are frozen, for descriptive comparison rather than supervised validation.
+
+The representation combines standardized numerical variables with one-hot categorical indicators. PCA, K-Means, and Ward clustering therefore impose **Euclidean** geometry on mixed data; results can change with encoding, scaling, distance choice, cohort composition, and missingness. PCA loadings are representation summaries, not causal effects or automatically meaningful latent constructs.
+
+Cluster numbers are arbitrary identifiers, not an ordering of health or severity. The clusters are exploratory and are **not clinical** phenotypes, diagnoses, subtypes, or validated patient segments. External assignment only measures how frozen Cleveland centroids partition other historical cohorts; it does not validate the groups clinically.
+
 ## Limitations
 
 - Historical, small observational cohorts with incomplete documentation.
@@ -35,6 +43,7 @@ Sex and broad age bands were predeclared. A subgroup below 25 patients is marked
 - Missingness may be informative and differs by site.
 - External discrimination does not establish calibration, utility, or safety in a new population.
 - No prospective evaluation, clinician review, causal analysis, or clinical validation.
+- Unsupervised groups depend on mixed-data Euclidean geometry and have no demonstrated clinical meaning.
 - The demonstration artifact is version-locked and rejects incompatible metadata; that is an engineering control, not a medical safeguard.
 
 ## Intended and prohibited use
