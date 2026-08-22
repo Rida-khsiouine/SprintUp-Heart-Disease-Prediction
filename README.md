@@ -69,7 +69,22 @@ See [the model card](docs/model-card.md) for interpretation limits and [the gene
 This scientifically separate track asks whether natural patient groups appear in Cleveland's feature space and whether those frozen groups transfer to the other hospitals. Disease labels are excluded from preprocessing, PCA, cluster-count selection, and fitting; they are joined only for post-hoc description. These exploratory clusters are not diagnoses or clinical subtypes.
 
 <!-- GENERATED_UNSUPERVISED_START -->
-_Generate this block with `heart-disease analyze-unsupervised --profile full`._
+_Generated from `reports/unsupervised/summary.json` (full profile). Labels were not used for fitting._
+
+| Exploratory evidence | Value |
+|---|---:|
+| Selected clusters | 2 |
+| PCA components retained | 12 |
+| Cumulative variance retained | 0.908 |
+| Silhouette score | 0.180 |
+| Subsample stability ARI | 0.891 |
+| K-Means vs Ward ARI | 0.355 |
+
+| Frozen external transfer | Cluster-proportion distance |
+|---|---:|
+| hungary | 0.170 |
+| switzerland | 0.028 |
+| va | 0.136 |
 <!-- GENERATED_UNSUPERVISED_END -->
 
 The complete selection, stability, hierarchy, profile, and transfer evidence is indexed in [`reports/README.md`](reports/README.md).
