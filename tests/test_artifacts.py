@@ -10,13 +10,18 @@ import pandas as pd
 import pytest
 
 import heart_disease.artifacts as artifacts
+import heart_disease.training as training
 from heart_disease.artifacts import (
     ArtifactValidationError,
     load_artifact,
     predict_record,
     save_artifact,
 )
-from heart_disease.models import build_pipeline
+from heart_disease.data import Cohort
+from heart_disease.evaluation import Selection
+from heart_disease.models import ExperimentConfig, build_pipeline
+from heart_disease.training import train_final
+from heart_disease.validation import CohortData
 
 
 def _features(rows: int = 20) -> pd.DataFrame:
@@ -58,12 +63,14 @@ def _fitted_pipeline() -> object:
 
 def test_artifact_round_trip_preserves_probability(tmp_path: Path) -> None:
     pipeline = _fitted_pipeline()
-    before = pipeline.predict_proba(pd.DataFrame([_record()]))[0, 1]
+    record = _record()
+    record["oldpeak"] = 1.7
+    before = pipeline.predict_proba(pd.DataFrame([record]))[0, 1]
     artifact_path = save_artifact(pipeline, _metadata(), tmp_path)
     metadata_path = tmp_path / "metadata.json"
 
     restored = load_artifact(artifact_path, metadata_path)
-    after = restored.predict_proba(pd.DataFrame([_record()]))[0, 1]
+    after = restored.predict_proba(pd.DataFrame([record]))[0, 1]
 
     assert after == pytest.approx(before, abs=1e-15)
 
@@ -92,6 +99,71 @@ def test_load_rejects_unexpected_trusted_type(
 
     with pytest.raises(ArtifactValidationError, match="untrusted.*malicious.Payload"):
         load_artifact(artifact_path, tmp_path / "metadata.json")
+
+
+def test_load_rejects_model_hash_mismatch(tmp_path: Path) -> None:
+    artifact_path = save_artifact(_fitted_pipeline(), _metadata(), tmp_path)
+    artifact_path.write_bytes(artifact_path.read_bytes() + b"tampered")
+
+    with pytest.raises(ArtifactValidationError, match="model hash mismatch"):
+        load_artifact(artifact_path, tmp_path / "metadata.json")
+
+
+@pytest.mark.parametrize(
+    "field, value, message",
+    [
+        ("package_version", "999.0", "package-version mismatch"),
+        ("schema", {"features": []}, "feature-schema mismatch"),
+    ],
+)
+def test_load_rejects_version_or_schema_mismatch(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    message: str,
+) -> None:
+    artifact_path = save_artifact(_fitted_pipeline(), _metadata(), tmp_path)
+    metadata_path = tmp_path / "metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata[field] = value
+    metadata["metadata_sha256"] = artifacts._metadata_hash(metadata)
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ArtifactValidationError, match=message):
+        load_artifact(artifact_path, metadata_path)
+
+
+def test_nonlinear_final_model_is_calibrated_and_serializable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    features = _features(30)
+    target = pd.Series(np.arange(30) % 2, name="disease_present")
+    development = CohortData(
+        Cohort.CLEVELAND, features, target, target.rename("num")
+    )
+    selection = Selection("gradient_boosting", "test", 0.5, 0.4)
+    monkeypatch.setattr(
+        training,
+        "parameter_grid",
+        lambda _: {
+            "model__learning_rate": [0.1],
+            "model__n_estimators": [5],
+            "model__max_depth": [1],
+        },
+    )
+
+    fitted = train_final(
+        development,
+        selection,
+        ExperimentConfig(inner_splits=2),
+    )
+    before = fitted.predict_proba(features.iloc[[0]])[0, 1]
+    artifact_path = save_artifact(fitted, _metadata(), tmp_path)
+    restored = load_artifact(artifact_path, tmp_path / "metadata.json")
+
+    assert "calibrated_model" in fitted.named_steps
+    assert restored.predict_proba(features.iloc[[0]])[0, 1] == pytest.approx(before)
 
 
 def test_predict_accepts_raw_thirteen_feature_record(tmp_path: Path) -> None:

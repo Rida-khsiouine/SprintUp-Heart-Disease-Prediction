@@ -53,7 +53,12 @@ ALLOWED_ESTIMATOR_TYPES = {
     GradientBoostingClassifier,
     CalibratedClassifierCV,
 }
-ALLOWED_SKOPS_TYPES = {"numpy.dtype"}
+ALLOWED_SKOPS_TYPES = {
+    "numpy.dtype",
+    "sklearn.calibration._CalibratedClassifier",
+    "sklearn.calibration._SigmoidCalibration",
+    "sklearn.model_selection._split.StratifiedKFold",
+}
 
 
 class ArtifactValidationError(ValueError):

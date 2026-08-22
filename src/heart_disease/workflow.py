@@ -106,7 +106,9 @@ def reproduce_study(
     config = config_for_profile(profile)
     development = load_cohort(Cohort.CLEVELAND, data_dir)
     results = evaluation.run_nested_cv(development, config)
-    selection = evaluation.select_candidate(results)
+    selection = evaluation.select_candidate(
+        results, recall_floor=config.screening_recall
+    )
     fitted = train_final(development, selection, config)
     thresholds = Thresholds(
         default=selection.default_threshold,

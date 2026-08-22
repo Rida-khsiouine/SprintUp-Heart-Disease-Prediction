@@ -368,7 +368,11 @@ def _selection_summary(result: CandidateResult) -> dict[str, float]:
     }
 
 
-def select_candidate(results: dict[ModelName, CandidateResult]) -> Selection:
+def select_candidate(
+    results: dict[ModelName, CandidateResult],
+    *,
+    recall_floor: float = 0.85,
+) -> Selection:
     """Apply ROC-AUC selection and the one-standard-error simplicity rule."""
 
     selectable = {
@@ -409,7 +413,7 @@ def select_candidate(results: dict[ModelName, CandidateResult]) -> Selection:
     screening_threshold = choose_screening_threshold(
         averaged["truth"].to_numpy(),
         averaged["probability"].to_numpy(),
-        recall_floor=0.85,
+        recall_floor=recall_floor,
     )
     reason = (
         f"{selected_name} is the simplest candidate within the one-standard-error "

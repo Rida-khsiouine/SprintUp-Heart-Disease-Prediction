@@ -177,3 +177,11 @@ def test_selection_uses_calibration_as_a_tie_breaker() -> None:
 
     # The one-standard-error simplicity rule has priority over metric tie-breakers.
     assert selection.model_name == "logistic"
+
+
+def test_selection_uses_supplied_screening_recall_floor() -> None:
+    logistic = _candidate("logistic", [0.8, 0.8])
+
+    selection = select_candidate({"logistic": logistic}, recall_floor=0.5)
+
+    assert selection.screening_threshold == pytest.approx(0.9)
