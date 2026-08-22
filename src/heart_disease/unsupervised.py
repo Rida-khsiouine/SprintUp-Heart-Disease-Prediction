@@ -15,10 +15,14 @@ from sklearn.metrics import (
     davies_bouldin_score,
     silhouette_score,
 )
-from sklearn.metrics.cluster import adjusted_rand_score
+from sklearn.metrics.cluster import adjusted_mutual_info_score, adjusted_rand_score
 
-from heart_disease.models import build_preprocessor
-from heart_disease.validation import FEATURE_COLUMNS
+from heart_disease.models import (
+    CATEGORICAL_COLUMNS,
+    NUMERICAL_COLUMNS,
+    build_preprocessor,
+)
+from heart_disease.validation import FEATURE_COLUMNS, CohortData
 
 
 class UnsupervisedValidationError(ValueError):
@@ -68,6 +72,43 @@ class HierarchicalComparison:
     linkage_matrix: np.ndarray
     assignments: np.ndarray
     metrics: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class FittedProfiles:
+    """All Cleveland-fitted objects and label-free selection evidence."""
+
+    config: UnsupervisedConfig
+    preprocessor: ColumnTransformer
+    pca: PCA
+    kmeans: KMeans
+    selected_k: int
+    retained_components: int
+    development_embedding: np.ndarray
+    development_assignments: np.ndarray
+    hierarchical_assignments: np.ndarray
+    linkage_matrix: np.ndarray
+    cluster_selection: pd.DataFrame
+    stability: pd.DataFrame
+    pca_summary: pd.DataFrame
+    pca_loadings: pd.DataFrame
+    hierarchical_comparison: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class UnsupervisedStudy:
+    """Post-hoc profiles and frozen external-transfer evidence."""
+
+    selected_k: int
+    retained_components: int
+    cluster_selection: pd.DataFrame
+    pca_summary: pd.DataFrame
+    pca_loadings: pd.DataFrame
+    hierarchical_comparison: pd.DataFrame
+    cluster_profiles: pd.DataFrame
+    patient_assignments: pd.DataFrame
+    external_transfer: pd.DataFrame
+    interpretation: dict[str, object]
 
 
 def validate_unsupervised_inputs(
@@ -375,4 +416,315 @@ def fit_hierarchical_comparison(
         linkage_matrix=np.asarray(linkage_matrix, dtype=float),
         assignments=assignments,
         metrics=pd.DataFrame(rows),
+    )
+
+
+def fit_unsupervised_profiles(
+    development_features: pd.DataFrame,
+    config: UnsupervisedConfig,
+) -> FittedProfiles:
+    """Fit the complete unsupervised track without accepting target values."""
+
+    representation = fit_pca_representation(development_features, config)
+    selection = fit_kmeans_candidates(representation, config)
+    stability = estimate_cluster_stability(representation, selection, config)
+    hierarchical = fit_hierarchical_comparison(representation, selection)
+
+    cluster_selection = selection.cluster_selection.copy()
+    cluster_selection["selected"] = cluster_selection["k"].eq(
+        selection.selected_k
+    )
+    cluster_selection["stability_ari_mean"] = np.nan
+    cluster_selection["stability_ari_std"] = np.nan
+    selected_mask = cluster_selection["selected"]
+    cluster_selection.loc[selected_mask, "stability_ari_mean"] = float(
+        stability["adjusted_rand_index"].mean()
+    )
+    cluster_selection.loc[selected_mask, "stability_ari_std"] = float(
+        stability["adjusted_rand_index"].std(ddof=0)
+    )
+
+    return FittedProfiles(
+        config=config,
+        preprocessor=representation.preprocessor,
+        pca=representation.pca,
+        kmeans=selection.kmeans,
+        selected_k=selection.selected_k,
+        retained_components=representation.retained_components,
+        development_embedding=representation.retained,
+        development_assignments=selection.assignments,
+        hierarchical_assignments=hierarchical.assignments,
+        linkage_matrix=hierarchical.linkage_matrix,
+        cluster_selection=cluster_selection,
+        stability=stability,
+        pca_summary=representation.pca_summary,
+        pca_loadings=representation.pca_loadings,
+        hierarchical_comparison=hierarchical.metrics,
+    )
+
+
+def _validate_feature_schema(features: pd.DataFrame) -> None:
+    if tuple(features.columns) != tuple(FEATURE_COLUMNS):
+        raise UnsupervisedValidationError(
+            "Every cohort must use the canonical 13-feature schema and order"
+        )
+
+
+def _validate_cohort_join(cohort: CohortData) -> None:
+    lengths = {
+        len(cohort.features),
+        len(cohort.target),
+        len(cohort.raw_target),
+    }
+    if len(lengths) != 1:
+        raise UnsupervisedValidationError(
+            "Assignments must join one-to-one with patients"
+        )
+    if not cohort.features.index.is_unique or not cohort.target.index.is_unique:
+        raise UnsupervisedValidationError(
+            "Assignments must join one-to-one with patients"
+        )
+    _validate_feature_schema(cohort.features)
+
+
+def _transform_external(
+    fitted: FittedProfiles,
+    features: pd.DataFrame,
+) -> np.ndarray:
+    _validate_feature_schema(features)
+    transformed = np.asarray(fitted.preprocessor.transform(features), dtype=float)
+    if not np.isfinite(transformed).all():
+        raise UnsupervisedValidationError(
+            "Transformed features contain non-finite values"
+        )
+    return fitted.pca.transform(transformed)[:, : fitted.retained_components]
+
+
+def _assignment_frame(
+    fitted: FittedProfiles,
+    cohort: CohortData,
+    *,
+    development: bool,
+) -> pd.DataFrame:
+    _validate_cohort_join(cohort)
+    if development:
+        embedding = fitted.development_embedding
+        assignments = fitted.development_assignments
+        hierarchical = pd.array(
+            fitted.hierarchical_assignments,
+            dtype="Int64",
+        )
+    else:
+        embedding = _transform_external(fitted, cohort.features)
+        assignments = np.asarray(fitted.kmeans.predict(embedding), dtype=int)
+        hierarchical = pd.array([pd.NA] * len(cohort.features), dtype="Int64")
+    if len(assignments) != len(cohort.features):
+        raise UnsupervisedValidationError(
+            "Assignments must join one-to-one with patients"
+        )
+    centroid_distance = np.linalg.norm(
+        embedding - fitted.kmeans.cluster_centers_[assignments],
+        axis=1,
+    )
+    return pd.DataFrame(
+        {
+            "cohort": cohort.cohort.value,
+            "patient_id": np.arange(len(cohort.features), dtype=int),
+            "kmeans_cluster": assignments,
+            "hierarchical_cluster": hierarchical,
+            "pc1": embedding[:, 0],
+            "pc2": embedding[:, 1],
+            "centroid_distance": centroid_distance,
+            "disease_present": cohort.target.to_numpy(dtype=int),
+        }
+    )
+
+
+def _cluster_profiles(
+    fitted: FittedProfiles,
+    development: CohortData,
+) -> pd.DataFrame:
+    rows: list[dict[str, object]] = []
+    for cluster in range(fitted.selected_k):
+        mask = fitted.development_assignments == cluster
+        size = int(mask.sum())
+        status = (
+            "available"
+            if size >= fitted.config.min_cluster_size
+            else "underpowered"
+        )
+        cluster_features = development.features.loc[mask]
+        for feature in NUMERICAL_COLUMNS:
+            values = pd.to_numeric(cluster_features[feature]).dropna()
+            statistics = {
+                "median": values.median(),
+                "q1": values.quantile(0.25),
+                "q3": values.quantile(0.75),
+            }
+            for statistic, value in statistics.items():
+                rows.append(
+                    {
+                        "cohort": development.cohort.value,
+                        "cluster": cluster,
+                        "n": size,
+                        "status": status,
+                        "feature": feature,
+                        "statistic": statistic,
+                        "level": "",
+                        "value": float(value),
+                    }
+                )
+        for feature in CATEGORICAL_COLUMNS:
+            levels = (
+                pd.to_numeric(cluster_features[feature])
+                .astype("Float64")
+                .astype("string")
+                .fillna("missing")
+            )
+            proportions = levels.value_counts(normalize=True).sort_index()
+            for level, value in proportions.items():
+                rows.append(
+                    {
+                        "cohort": development.cohort.value,
+                        "cluster": cluster,
+                        "n": size,
+                        "status": status,
+                        "feature": feature,
+                        "statistic": "proportion",
+                        "level": str(level),
+                        "value": float(value),
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
+def _external_transfer(
+    fitted: FittedProfiles,
+    assignments: pd.DataFrame,
+) -> pd.DataFrame:
+    development = assignments.loc[assignments["cohort"].eq("cleveland")]
+    baseline = np.asarray(
+        [
+            development["kmeans_cluster"].eq(cluster).mean()
+            for cluster in range(fitted.selected_k)
+        ],
+        dtype=float,
+    )
+    rows: list[dict[str, object]] = []
+    for cohort_name in assignments["cohort"].drop_duplicates():
+        cohort_rows = assignments.loc[assignments["cohort"].eq(cohort_name)]
+        proportions = np.asarray(
+            [
+                cohort_rows["kmeans_cluster"].eq(cluster).mean()
+                for cluster in range(fitted.selected_k)
+            ],
+            dtype=float,
+        )
+        total_variation = float(0.5 * np.abs(proportions - baseline).sum())
+        for cluster in range(fitted.selected_k):
+            cluster_rows = cohort_rows.loc[
+                cohort_rows["kmeans_cluster"].eq(cluster)
+            ]
+            size = len(cluster_rows)
+            status = (
+                "available"
+                if size >= fitted.config.min_cluster_size
+                else "underpowered"
+            )
+            rows.append(
+                {
+                    "cohort": str(cohort_name),
+                    "cluster": cluster,
+                    "n": size,
+                    "proportion": float(proportions[cluster]),
+                    "disease_prevalence": (
+                        float(cluster_rows["disease_present"].mean())
+                        if size
+                        else float("nan")
+                    ),
+                    "median_centroid_distance": (
+                        float(cluster_rows["centroid_distance"].median())
+                        if size
+                        else float("nan")
+                    ),
+                    "cluster_proportion_total_variation": total_variation,
+                    "status": status,
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def describe_unsupervised_profiles(
+    fitted: FittedProfiles,
+    development: CohortData,
+    external: tuple[CohortData, ...],
+    config: UnsupervisedConfig,
+) -> UnsupervisedStudy:
+    """Join frozen assignments to labels for descriptive evidence only."""
+
+    if config != fitted.config:
+        raise UnsupervisedValidationError(
+            "Description config must match the fitted unsupervised config"
+        )
+    _validate_cohort_join(development)
+    assignment_frames = [
+        _assignment_frame(fitted, development, development=True)
+    ]
+    assignment_frames.extend(
+        _assignment_frame(fitted, cohort, development=False)
+        for cohort in external
+    )
+    patient_assignments = pd.concat(assignment_frames, ignore_index=True)
+    if patient_assignments.duplicated(["cohort", "patient_id"]).any():
+        raise UnsupervisedValidationError(
+            "Assignments must join one-to-one with patients"
+        )
+
+    selected = fitted.cluster_selection.loc[
+        fitted.cluster_selection["selected"]
+    ].iloc[0]
+    hierarchical_ari = float(
+        fitted.hierarchical_comparison["adjusted_rand_index"].iloc[0]
+    )
+    development_ami = float(
+        adjusted_mutual_info_score(
+            development.target.to_numpy(dtype=int),
+            fitted.development_assignments,
+        )
+    )
+    retained_variance = float(
+        fitted.pca_summary.loc[
+            fitted.retained_components - 1,
+            "cumulative_explained_variance",
+        ]
+    )
+    interpretation: dict[str, object] = {
+        "selected_k": fitted.selected_k,
+        "retained_components": fitted.retained_components,
+        "retained_variance": retained_variance,
+        "silhouette": float(selected["silhouette"]),
+        "davies_bouldin": float(selected["davies_bouldin"]),
+        "calinski_harabasz": float(selected["calinski_harabasz"]),
+        "stability_ari_mean": float(selected["stability_ari_mean"]),
+        "stability_ari_std": float(selected["stability_ari_std"]),
+        "hierarchical_ari": hierarchical_ari,
+        "development_target_ami": development_ami,
+        "target_used_for_fit": False,
+        "external_used_for_selection": False,
+        "distance_limitation": (
+            "Euclidean distance over scaled numeric and one-hot categorical "
+            "features is an exploratory mixed-data approximation."
+        ),
+    }
+    return UnsupervisedStudy(
+        selected_k=fitted.selected_k,
+        retained_components=fitted.retained_components,
+        cluster_selection=fitted.cluster_selection.copy(),
+        pca_summary=fitted.pca_summary.copy(),
+        pca_loadings=fitted.pca_loadings.copy(),
+        hierarchical_comparison=fitted.hierarchical_comparison.copy(),
+        cluster_profiles=_cluster_profiles(fitted, development),
+        patient_assignments=patient_assignments,
+        external_transfer=_external_transfer(fitted, patient_assignments),
+        interpretation=interpretation,
     )

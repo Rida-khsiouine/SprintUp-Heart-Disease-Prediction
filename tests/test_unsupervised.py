@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -9,10 +11,12 @@ from heart_disease.data import Cohort
 from heart_disease.unsupervised import (
     UnsupervisedConfig,
     UnsupervisedValidationError,
+    describe_unsupervised_profiles,
     estimate_cluster_stability,
     fit_hierarchical_comparison,
     fit_kmeans_candidates,
     fit_pca_representation,
+    fit_unsupervised_profiles,
     select_cluster_count,
     validate_unsupervised_inputs,
 )
@@ -199,3 +203,118 @@ def test_hierarchical_comparison_uses_selected_k() -> None:
     assert int(comparison.metrics["count"].sum()) == len(
         representation.retained
     )
+
+
+def test_fit_is_independent_of_target_values() -> None:
+    features = _features(100)
+    config = UnsupervisedConfig(
+        k_values=(2, 3),
+        stability_iterations=3,
+    )
+
+    first = fit_unsupervised_profiles(features, config)
+    second = fit_unsupervised_profiles(features.copy(), config)
+
+    np.testing.assert_array_equal(
+        first.development_assignments,
+        second.development_assignments,
+    )
+    np.testing.assert_array_equal(
+        first.kmeans.cluster_centers_,
+        second.kmeans.cluster_centers_,
+    )
+
+
+def test_external_data_cannot_change_components_or_centroids() -> None:
+    config = UnsupervisedConfig(
+        k_values=(2, 3),
+        stability_iterations=3,
+    )
+    development = _cohort(Cohort.CLEVELAND, rows=100)
+    external = _cohort(Cohort.HUNGARY, rows=40, age_offset=10_000)
+    fitted = fit_unsupervised_profiles(development.features, config)
+    components = fitted.pca.components_.copy()
+    centroids = fitted.kmeans.cluster_centers_.copy()
+
+    describe_unsupervised_profiles(
+        fitted,
+        development,
+        (external,),
+        config,
+    )
+
+    np.testing.assert_array_equal(fitted.pca.components_, components)
+    np.testing.assert_array_equal(fitted.kmeans.cluster_centers_, centroids)
+
+
+def test_small_external_cluster_is_marked_underpowered() -> None:
+    config = UnsupervisedConfig(
+        k_values=(2,),
+        stability_iterations=2,
+        min_cluster_size=25,
+    )
+    development = _cohort(Cohort.CLEVELAND, rows=80)
+    external = _cohort(Cohort.HUNGARY, rows=12)
+    fitted = fit_unsupervised_profiles(development.features, config)
+
+    study = describe_unsupervised_profiles(
+        fitted,
+        development,
+        (external,),
+        config,
+    )
+
+    hungary = study.external_transfer.loc[
+        study.external_transfer["cohort"].eq("hungary")
+    ]
+    assert not hungary.empty
+    assert set(hungary["status"]) == {"underpowered"}
+
+
+def test_assignment_join_must_be_one_to_one() -> None:
+    config = UnsupervisedConfig(k_values=(2,), stability_iterations=2)
+    development = _cohort(Cohort.CLEVELAND, rows=80)
+    malformed = dataclasses.replace(
+        development,
+        target=development.target.iloc[:-1],
+    )
+    fitted = fit_unsupervised_profiles(development.features, config)
+
+    with pytest.raises(UnsupervisedValidationError, match="one-to-one"):
+        describe_unsupervised_profiles(fitted, malformed, (), config)
+
+
+def test_profile_outputs_cover_declared_cohorts_and_statistics() -> None:
+    config = UnsupervisedConfig(k_values=(2,), stability_iterations=2)
+    development = _cohort(Cohort.CLEVELAND, rows=80)
+    external = (
+        _cohort(Cohort.HUNGARY, rows=30),
+        _cohort(Cohort.SWITZERLAND, rows=30),
+        _cohort(Cohort.VA, rows=30),
+    )
+    fitted = fit_unsupervised_profiles(development.features, config)
+
+    study = describe_unsupervised_profiles(
+        fitted,
+        development,
+        external,
+        config,
+    )
+
+    assert set(study.patient_assignments["cohort"]) == {
+        "cleveland",
+        "hungary",
+        "switzerland",
+        "va",
+    }
+    assert set(study.external_transfer["cohort"]) == {
+        "cleveland",
+        "hungary",
+        "switzerland",
+        "va",
+    }
+    assert {"median", "q1", "q3", "proportion"} <= set(
+        study.cluster_profiles["statistic"]
+    )
+    assert study.interpretation["target_used_for_fit"] is False
+    assert study.interpretation["external_used_for_selection"] is False
