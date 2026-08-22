@@ -1,0 +1,55 @@
+{
+  "calinski_harabasz": 70.92419566541435,
+  "clinical_interpretation": "unavailable: exploratory groupings only",
+  "cluster_labels_arbitrary": true,
+  "config": {
+    "k_values": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "min_cluster_size": 25,
+    "retained_variance": 0.9,
+    "seed": 42,
+    "stability_iterations": 200,
+    "stability_sample_fraction": 0.8
+  },
+  "davies_bouldin": 2.004108657694342,
+  "development_cohort": "cleveland",
+  "development_target_ami": 0.19370597447183308,
+  "distance_limitation": "Euclidean distance over scaled numeric and one-hot categorical features is an exploratory mixed-data approximation.",
+  "external_cohorts": [
+    "hungary",
+    "switzerland",
+    "va"
+  ],
+  "external_transfer": [
+    {
+      "cluster_proportion_total_variation": 0.16963022832895536,
+      "cohort": "hungary",
+      "underpowered_clusters": 0
+    },
+    {
+      "cluster_proportion_total_variation": 0.027851565644369303,
+      "cohort": "switzerland",
+      "underpowered_clusters": 0
+    },
+    {
+      "cluster_proportion_total_variation": 0.13625412541254123,
+      "cohort": "va",
+      "underpowered_clusters": 0
+    }
+  ],
+  "external_used_for_selection": false,
+  "hierarchical_ari": 0.3546241523888835,
+  "profile": "full",
+  "retained_components": 12,
+  "retained_variance": 0.9081095019511298,
+  "selected_k": 2,
+  "silhouette": 0.18027715532970395,
+  "stability_ari_mean": 0.8912908453584436,
+  "stability_ari_std": 0.09552892754531772,
+  "target_used_for_fit": false
+}

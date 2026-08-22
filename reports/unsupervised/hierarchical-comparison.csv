@@ -1,0 +1,5 @@
+selected_k,adjusted_rand_index,kmeans_cluster,hierarchical_cluster,count
+2,0.3546241523888835,0,0,130
+2,0.3546241523888835,0,1,9
+2,0.3546241523888835,1,0,52
+2,0.3546241523888835,1,1,112

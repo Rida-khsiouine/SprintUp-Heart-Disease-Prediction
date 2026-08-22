@@ -1,0 +1,10 @@
+* text=auto
+*.json text eol=lf
+*.csv text eol=lf
+*.ipynb text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.skops -text
+data/raw/* -text

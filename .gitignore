@@ -1,0 +1,14 @@
+.venv/
+.uv-cache/
+.coverage
+coverage.xml
+htmlcov/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.matplotlib-cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
