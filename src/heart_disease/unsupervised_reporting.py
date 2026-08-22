@@ -168,24 +168,25 @@ def _plot_cluster_profiles(
     path: Path,
 ) -> None:
     medians = study.cluster_profiles.loc[
-        study.cluster_profiles["statistic"].eq("median")
+        study.cluster_profiles["statistic"].eq("standardized_median")
     ].pivot(index="cluster", columns="feature", values="value")
-    scale = medians.std(axis=0, ddof=0).replace(0, 1)
-    standardized = (medians - medians.mean(axis=0)) / scale
-    standardized = standardized.replace([np.inf, -np.inf], np.nan).fillna(0)
+    medians = medians.replace([np.inf, -np.inf], np.nan).fillna(0)
+    color_limit = max(float(medians.abs().to_numpy().max()), 0.5)
     figure, axis = plt.subplots(figsize=(8.0, 4.2))
     sns.heatmap(
-        standardized,
+        medians,
         annot=True,
         fmt=".2f",
         center=0,
+        vmin=-color_limit,
+        vmax=color_limit,
         cmap="vlag",
         ax=axis,
     )
     axis.set(
         xlabel="Numeric feature",
         ylabel="Canonical cluster ID",
-        title="Exploratory standardized cluster medians",
+        title="Exploratory Cleveland-standardized cluster medians",
     )
     _save_figure(figure, path)
 

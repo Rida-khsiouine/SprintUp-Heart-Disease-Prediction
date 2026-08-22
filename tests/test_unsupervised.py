@@ -326,7 +326,7 @@ def test_profile_outputs_cover_declared_cohorts_and_statistics() -> None:
         "switzerland",
         "va",
     }
-    assert {"median", "q1", "q3", "proportion"} <= set(
+    assert {"median", "q1", "q3", "standardized_median", "proportion"} <= set(
         study.cluster_profiles["statistic"]
     )
     assert study.interpretation["target_used_for_fit"] is False

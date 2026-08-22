@@ -551,6 +551,11 @@ def _cluster_profiles(
     fitted: FittedProfiles,
     development: CohortData,
 ) -> pd.DataFrame:
+    transformed = np.asarray(
+        fitted.preprocessor.transform(development.features),
+        dtype=float,
+    )
+    standardized_numeric = transformed[:, : len(NUMERICAL_COLUMNS)]
     rows: list[dict[str, object]] = []
     for cluster in range(fitted.selected_k):
         mask = fitted.development_assignments == cluster
@@ -561,12 +566,15 @@ def _cluster_profiles(
             else "underpowered"
         )
         cluster_features = development.features.loc[mask]
-        for feature in NUMERICAL_COLUMNS:
+        for feature_index, feature in enumerate(NUMERICAL_COLUMNS):
             values = pd.to_numeric(cluster_features[feature]).dropna()
             statistics = {
                 "median": values.median(),
                 "q1": values.quantile(0.25),
                 "q3": values.quantile(0.75),
+                "standardized_median": np.median(
+                    standardized_numeric[mask, feature_index]
+                ),
             }
             for statistic, value in statistics.items():
                 rows.append(
