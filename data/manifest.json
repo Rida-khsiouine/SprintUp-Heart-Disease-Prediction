@@ -1,0 +1,59 @@
+{
+  "dataset": {
+    "name": "Heart Disease",
+    "repository": "UCI Machine Learning Repository",
+    "doi": "10.24432/C52P4X",
+    "license": "CC BY 4.0",
+    "retrieved": "2026-08-22"
+  },
+  "columns": [
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal",
+    "num"
+  ],
+  "cohorts": {
+    "cleveland": {
+      "url": "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data",
+      "filename": "processed.cleveland.data",
+      "sha256": "a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8",
+      "bytes": 18461,
+      "rows": 303,
+      "role": "development"
+    },
+    "hungary": {
+      "url": "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.hungarian.data",
+      "filename": "processed.hungarian.data",
+      "sha256": "d1ad108f785768cd3d7e82dc522e6f5a61eea93cccfb3a46ee8076f73fc3d796",
+      "bytes": 10263,
+      "rows": 294,
+      "role": "external_validation"
+    },
+    "switzerland": {
+      "url": "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.switzerland.data",
+      "filename": "processed.switzerland.data",
+      "sha256": "834a405ccf5b66ab4056bb77794adc8df0b7125186454c0a1d002d33c6c3b314",
+      "bytes": 4109,
+      "rows": 123,
+      "role": "external_validation"
+    },
+    "va": {
+      "url": "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.va.data",
+      "filename": "processed.va.data",
+      "sha256": "e7c93d8d0d2acdadfa4c5e8de768e2191e7f618b952e29623f1f0d5949ff6b8f",
+      "bytes": 6737,
+      "rows": 200,
+      "role": "external_validation"
+    }
+  }
+}
