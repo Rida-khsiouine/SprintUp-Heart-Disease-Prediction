@@ -284,6 +284,19 @@ def test_assignment_join_must_be_one_to_one() -> None:
         describe_unsupervised_profiles(fitted, malformed, (), config)
 
 
+def test_assignment_join_rejects_misaligned_patient_indices() -> None:
+    config = UnsupervisedConfig(k_values=(2,), stability_iterations=2)
+    development = _cohort(Cohort.CLEVELAND, rows=80)
+    malformed = dataclasses.replace(
+        development,
+        target=development.target.set_axis(np.arange(1, 81)),
+    )
+    fitted = fit_unsupervised_profiles(development.features, config)
+
+    with pytest.raises(UnsupervisedValidationError, match="one-to-one"):
+        describe_unsupervised_profiles(fitted, malformed, (), config)
+
+
 def test_profile_outputs_cover_declared_cohorts_and_statistics() -> None:
     config = UnsupervisedConfig(k_values=(2,), stability_iterations=2)
     development = _cohort(Cohort.CLEVELAND, rows=80)

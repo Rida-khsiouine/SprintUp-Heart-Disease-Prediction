@@ -480,7 +480,14 @@ def _validate_cohort_join(cohort: CohortData) -> None:
         raise UnsupervisedValidationError(
             "Assignments must join one-to-one with patients"
         )
-    if not cohort.features.index.is_unique or not cohort.target.index.is_unique:
+    indexes = (
+        cohort.features.index,
+        cohort.target.index,
+        cohort.raw_target.index,
+    )
+    if not all(index.is_unique for index in indexes) or not all(
+        index.equals(indexes[0]) for index in indexes[1:]
+    ):
         raise UnsupervisedValidationError(
             "Assignments must join one-to-one with patients"
         )
