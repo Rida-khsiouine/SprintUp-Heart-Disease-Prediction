@@ -44,6 +44,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -62,6 +64,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -80,6 +84,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -98,6 +104,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2484716083,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -116,6 +124,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2481329066,
+          "train_roc_auc": 0.5,
           "true_negative": 32,
           "true_positive": 0
         },
@@ -134,6 +144,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -152,6 +164,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -170,6 +184,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -188,6 +204,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2484716083,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -206,6 +224,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2481329066,
+          "train_roc_auc": 0.5,
           "true_negative": 32,
           "true_positive": 0
         },
@@ -224,6 +244,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -242,6 +264,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -260,6 +284,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -278,6 +304,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2484716083,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -296,6 +324,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2481329066,
+          "train_roc_auc": 0.5,
           "true_negative": 32,
           "true_positive": 0
         },
@@ -314,6 +344,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -332,6 +364,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -350,6 +384,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -368,6 +404,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2484716083,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -386,6 +424,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2481329066,
+          "train_roc_auc": 0.5,
           "true_negative": 32,
           "true_positive": 0
         },
@@ -404,6 +444,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -422,6 +464,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -440,6 +484,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2482924664,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -458,6 +504,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2484716083,
+          "train_roc_auc": 0.5,
           "true_negative": 33,
           "true_positive": 0
         },
@@ -476,6 +524,8 @@
           "roc_auc": 0.5,
           "sensitivity": 0.0,
           "specificity": 1.0,
+          "train_brier_score": 0.2481329066,
+          "train_roc_auc": 0.5,
           "true_negative": 32,
           "true_positive": 0
         }
@@ -630,6 +680,8 @@
           "roc_auc": 0.9523809524,
           "sensitivity": 0.8928571429,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1015673383,
+          "train_roc_auc": 0.9458771749,
           "true_negative": 29,
           "true_positive": 25
         },
@@ -648,6 +700,8 @@
           "roc_auc": 0.8928571429,
           "sensitivity": 0.7857142857,
           "specificity": 0.7878787879,
+          "train_brier_score": 0.0765647942,
+          "train_roc_auc": 0.969603191,
           "true_negative": 26,
           "true_positive": 22
         },
@@ -666,6 +720,8 @@
           "roc_auc": 0.8831168831,
           "sensitivity": 0.7857142857,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.0969201384,
+          "train_roc_auc": 0.9412695138,
           "true_negative": 28,
           "true_positive": 22
         },
@@ -684,6 +740,8 @@
           "roc_auc": 0.9169472503,
           "sensitivity": 0.7037037037,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1009929266,
+          "train_roc_auc": 0.9360005453,
           "true_negative": 29,
           "true_positive": 19
         },
@@ -702,6 +760,8 @@
           "roc_auc": 0.8973214286,
           "sensitivity": 0.7857142857,
           "specificity": 0.9375,
+          "train_brier_score": 0.0986606405,
+          "train_roc_auc": 0.9416461916,
           "true_negative": 30,
           "true_positive": 22
         },
@@ -720,6 +780,8 @@
           "roc_auc": 0.9632034632,
           "sensitivity": 0.9285714286,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.1140416972,
+          "train_roc_auc": 0.9136235472,
           "true_negative": 28,
           "true_positive": 26
         },
@@ -738,6 +800,8 @@
           "roc_auc": 0.882034632,
           "sensitivity": 0.75,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0849533926,
+          "train_roc_auc": 0.96630218,
           "true_negative": 30,
           "true_positive": 21
         },
@@ -756,6 +820,8 @@
           "roc_auc": 0.9220779221,
           "sensitivity": 0.8928571429,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0974392742,
+          "train_roc_auc": 0.9489031016,
           "true_negative": 30,
           "true_positive": 25
         },
@@ -774,6 +840,8 @@
           "roc_auc": 0.8698092031,
           "sensitivity": 0.7037037037,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.0749452244,
+          "train_roc_auc": 0.9695338059,
           "true_negative": 28,
           "true_positive": 19
         },
@@ -792,6 +860,8 @@
           "roc_auc": 0.890625,
           "sensitivity": 0.7142857143,
           "specificity": 0.9375,
+          "train_brier_score": 0.0976236728,
+          "train_roc_auc": 0.940042315,
           "true_negative": 30,
           "true_positive": 20
         },
@@ -810,6 +880,8 @@
           "roc_auc": 0.9653679654,
           "sensitivity": 0.7857142857,
           "specificity": 1.0,
+          "train_brier_score": 0.1086928326,
+          "train_roc_auc": 0.9272058318,
           "true_negative": 33,
           "true_positive": 22
         },
@@ -828,6 +900,8 @@
           "roc_auc": 0.9621212121,
           "sensitivity": 0.9285714286,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.1172076668,
+          "train_roc_auc": 0.915102125,
           "true_negative": 30,
           "true_positive": 26
         },
@@ -846,6 +920,8 @@
           "roc_auc": 0.829004329,
           "sensitivity": 0.5714285714,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0789096346,
+          "train_roc_auc": 0.960662953,
           "true_negative": 27,
           "true_positive": 16
         },
@@ -864,6 +940,8 @@
           "roc_auc": 0.936026936,
           "sensitivity": 0.7777777778,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1003019614,
+          "train_roc_auc": 0.9364776445,
           "true_negative": 29,
           "true_positive": 21
         },
@@ -882,6 +960,8 @@
           "roc_auc": 0.8258928571,
           "sensitivity": 0.7857142857,
           "specificity": 0.8125,
+          "train_brier_score": 0.0359333637,
+          "train_roc_auc": 1.0,
           "true_negative": 26,
           "true_positive": 22
         },
@@ -900,6 +980,8 @@
           "roc_auc": 0.9512987013,
           "sensitivity": 0.8214285714,
           "specificity": 0.9696969697,
+          "train_brier_score": 0.0963597334,
+          "train_roc_auc": 0.9563303762,
           "true_negative": 32,
           "true_positive": 23
         },
@@ -918,6 +1000,8 @@
           "roc_auc": 0.882034632,
           "sensitivity": 0.75,
           "specificity": 0.7575757576,
+          "train_brier_score": 0.1082594428,
+          "train_roc_auc": 0.9258647961,
           "true_negative": 25,
           "true_positive": 21
         },
@@ -936,6 +1020,8 @@
           "roc_auc": 0.8906926407,
           "sensitivity": 0.7142857143,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0962275929,
+          "train_roc_auc": 0.9401004057,
           "true_negative": 30,
           "true_positive": 20
         },
@@ -954,6 +1040,8 @@
           "roc_auc": 0.8754208754,
           "sensitivity": 0.8148148148,
           "specificity": 0.7272727273,
+          "train_brier_score": 0.0890388873,
+          "train_roc_auc": 0.9533124318,
           "true_negative": 24,
           "true_positive": 22
         },
@@ -972,6 +1060,8 @@
           "roc_auc": 0.8482142857,
           "sensitivity": 0.75,
           "specificity": 0.90625,
+          "train_brier_score": 0.0850235342,
+          "train_roc_auc": 0.9572754573,
           "true_negative": 29,
           "true_positive": 21
         },
@@ -990,6 +1080,8 @@
           "roc_auc": 0.9134199134,
           "sensitivity": 0.8571428571,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0943224905,
+          "train_roc_auc": 0.9402379479,
           "true_negative": 27,
           "true_positive": 24
         },
@@ -1008,6 +1100,8 @@
           "roc_auc": 0.9004329004,
           "sensitivity": 0.8214285714,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0826010329,
+          "train_roc_auc": 0.9676776013,
           "true_negative": 29,
           "true_positive": 23
         },
@@ -1026,6 +1120,8 @@
           "roc_auc": 0.9437229437,
           "sensitivity": 0.7857142857,
           "specificity": 0.9696969697,
+          "train_brier_score": 0.1048476865,
+          "train_roc_auc": 0.9352176604,
           "true_negative": 32,
           "true_positive": 22
         },
@@ -1044,6 +1140,8 @@
           "roc_auc": 0.9304152637,
           "sensitivity": 0.7777777778,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0954047817,
+          "train_roc_auc": 0.9492230098,
           "true_negative": 29,
           "true_positive": 21
         },
@@ -1062,6 +1160,8 @@
           "roc_auc": 0.859375,
           "sensitivity": 0.75,
           "specificity": 0.8125,
+          "train_brier_score": 0.0879653147,
+          "train_roc_auc": 0.952975703,
           "true_negative": 26,
           "true_positive": 21
         }
@@ -1191,6 +1291,8 @@
           "roc_auc": 0.9577922078,
           "sensitivity": 0.9642857143,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0985787289,
+          "train_roc_auc": 0.9369369369,
           "true_negative": 30,
           "true_positive": 27
         },
@@ -1209,6 +1311,8 @@
           "roc_auc": 0.8982683983,
           "sensitivity": 0.7857142857,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.0867049296,
+          "train_roc_auc": 0.9489718726,
           "true_negative": 28,
           "true_positive": 22
         },
@@ -1227,6 +1331,8 @@
           "roc_auc": 0.9123376623,
           "sensitivity": 0.8214285714,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1055157608,
+          "train_roc_auc": 0.9355615157,
           "true_negative": 29,
           "true_positive": 23
         },
@@ -1245,6 +1351,8 @@
           "roc_auc": 0.9079685746,
           "sensitivity": 0.7037037037,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0888546278,
+          "train_roc_auc": 0.9412486369,
           "true_negative": 29,
           "true_positive": 19
         },
@@ -1263,6 +1371,8 @@
           "roc_auc": 0.9241071429,
           "sensitivity": 0.7857142857,
           "specificity": 0.96875,
+          "train_brier_score": 0.0934436865,
+          "train_roc_auc": 0.9413731914,
           "true_negative": 31,
           "true_positive": 22
         },
@@ -1281,6 +1391,8 @@
           "roc_auc": 0.9707792208,
           "sensitivity": 0.9642857143,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.1140533321,
+          "train_roc_auc": 0.9225637852,
           "true_negative": 30,
           "true_positive": 27
         },
@@ -1299,6 +1411,8 @@
           "roc_auc": 0.8777056277,
           "sensitivity": 0.7142857143,
           "specificity": 0.9393939394,
+          "train_brier_score": 0.0865160749,
+          "train_roc_auc": 0.9530293652,
           "true_negative": 31,
           "true_positive": 20
         },
@@ -1317,6 +1431,8 @@
           "roc_auc": 0.9393939394,
           "sensitivity": 0.8571428571,
           "specificity": 0.9393939394,
+          "train_brier_score": 0.1104054838,
+          "train_roc_auc": 0.9300598308,
           "true_negative": 31,
           "true_positive": 24
         },
@@ -1335,6 +1451,8 @@
           "roc_auc": 0.8911335578,
           "sensitivity": 0.7777777778,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0989329501,
+          "train_roc_auc": 0.9431570338,
           "true_negative": 27,
           "true_positive": 21
         },
@@ -1353,6 +1471,8 @@
           "roc_auc": 0.9107142857,
           "sensitivity": 0.7142857143,
           "specificity": 0.875,
+          "train_brier_score": 0.1055082412,
+          "train_roc_auc": 0.9327054327,
           "true_negative": 28,
           "true_positive": 20
         },
@@ -1371,6 +1491,8 @@
           "roc_auc": 0.9696969697,
           "sensitivity": 0.8214285714,
           "specificity": 1.0,
+          "train_brier_score": 0.1141069538,
+          "train_roc_auc": 0.9220136167,
           "true_negative": 33,
           "true_positive": 23
         },
@@ -1389,6 +1511,8 @@
           "roc_auc": 0.9621212121,
           "sensitivity": 0.8928571429,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.100554224,
+          "train_roc_auc": 0.9306099993,
           "true_negative": 30,
           "true_positive": 25
         },
@@ -1407,6 +1531,8 @@
           "roc_auc": 0.8495670996,
           "sensitivity": 0.6071428571,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0922316351,
+          "train_roc_auc": 0.9494532701,
           "true_negative": 30,
           "true_positive": 17
         },
@@ -1425,6 +1551,8 @@
           "roc_auc": 0.9326599327,
           "sensitivity": 0.8518518519,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.1083871418,
+          "train_roc_auc": 0.9310250818,
           "true_negative": 30,
           "true_positive": 23
         },
@@ -1443,6 +1571,8 @@
           "roc_auc": 0.8950892857,
           "sensitivity": 0.8928571429,
           "specificity": 0.84375,
+          "train_brier_score": 0.1025257174,
+          "train_roc_auc": 0.9398716899,
           "true_negative": 27,
           "true_positive": 25
         },
@@ -1461,6 +1591,8 @@
           "roc_auc": 0.9458874459,
           "sensitivity": 0.8571428571,
           "specificity": 0.9393939394,
+          "train_brier_score": 0.1152638902,
+          "train_roc_auc": 0.9239392064,
           "true_negative": 31,
           "true_positive": 24
         },
@@ -1479,6 +1611,8 @@
           "roc_auc": 0.9274891775,
           "sensitivity": 0.8571428571,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1088645815,
+          "train_roc_auc": 0.9282717832,
           "true_negative": 29,
           "true_positive": 24
         },
@@ -1497,6 +1631,8 @@
           "roc_auc": 0.9058441558,
           "sensitivity": 0.6785714286,
           "specificity": 0.9393939394,
+          "train_brier_score": 0.1022727495,
+          "train_roc_auc": 0.9351488893,
           "true_negative": 31,
           "true_positive": 19
         },
@@ -1515,6 +1651,8 @@
           "roc_auc": 0.8956228956,
           "sensitivity": 0.8148148148,
           "specificity": 0.7878787879,
+          "train_brier_score": 0.1005614981,
+          "train_roc_auc": 0.9386586696,
           "true_negative": 26,
           "true_positive": 22
         },
@@ -1533,6 +1671,8 @@
           "roc_auc": 0.8705357143,
           "sensitivity": 0.7857142857,
           "specificity": 0.84375,
+          "train_brier_score": 0.0858706281,
+          "train_roc_auc": 0.950996451,
           "true_negative": 27,
           "true_positive": 22
         },
@@ -1551,6 +1691,8 @@
           "roc_auc": 0.9274891775,
           "sensitivity": 0.8571428571,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0884860326,
+          "train_roc_auc": 0.9451206932,
           "true_negative": 27,
           "true_positive": 24
         },
@@ -1569,6 +1711,8 @@
           "roc_auc": 0.908008658,
           "sensitivity": 0.8571428571,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.1057473679,
+          "train_roc_auc": 0.9365243106,
           "true_negative": 29,
           "true_positive": 24
         },
@@ -1587,6 +1731,8 @@
           "roc_auc": 0.9567099567,
           "sensitivity": 0.75,
           "specificity": 1.0,
+          "train_brier_score": 0.0972254212,
+          "train_roc_auc": 0.9362492263,
           "true_negative": 33,
           "true_positive": 21
         },
@@ -1605,6 +1751,8 @@
           "roc_auc": 0.9147025814,
           "sensitivity": 0.8518518519,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.1070546248,
+          "train_roc_auc": 0.9291848419,
           "true_negative": 28,
           "true_positive": 23
         },
@@ -1623,6 +1771,8 @@
           "roc_auc": 0.8772321429,
           "sensitivity": 0.75,
           "specificity": 0.9375,
+          "train_brier_score": 0.101899743,
+          "train_roc_auc": 0.9387796888,
           "true_negative": 30,
           "true_positive": 21
         }
@@ -1777,6 +1927,8 @@
           "roc_auc": 0.9448051948,
           "sensitivity": 0.8571428571,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0856097973,
+          "train_roc_auc": 0.9616257479,
           "true_negative": 29,
           "true_positive": 24
         },
@@ -1795,6 +1947,8 @@
           "roc_auc": 0.8766233766,
           "sensitivity": 0.7857142857,
           "specificity": 0.7575757576,
+          "train_brier_score": 0.0193686343,
+          "train_roc_auc": 1.0,
           "true_negative": 25,
           "true_positive": 22
         },
@@ -1813,6 +1967,8 @@
           "roc_auc": 0.9069264069,
           "sensitivity": 0.8214285714,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0827138182,
+          "train_roc_auc": 0.9627260849,
           "true_negative": 29,
           "true_positive": 23
         },
@@ -1831,6 +1987,8 @@
           "roc_auc": 0.9158249158,
           "sensitivity": 0.7407407407,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0802772439,
+          "train_roc_auc": 0.9642857143,
           "true_negative": 29,
           "true_positive": 20
         },
@@ -1849,6 +2007,8 @@
           "roc_auc": 0.9241071429,
           "sensitivity": 0.7857142857,
           "specificity": 0.9375,
+          "train_brier_score": 0.0791565763,
+          "train_roc_auc": 0.9665574666,
           "true_negative": 30,
           "true_positive": 22
         },
@@ -1867,6 +2027,8 @@
           "roc_auc": 0.961038961,
           "sensitivity": 0.9285714286,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0295426818,
+          "train_roc_auc": 1.0,
           "true_negative": 29,
           "true_positive": 26
         },
@@ -1885,6 +2047,8 @@
           "roc_auc": 0.9145021645,
           "sensitivity": 0.7857142857,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0802746688,
+          "train_roc_auc": 0.9660958669,
           "true_negative": 29,
           "true_positive": 22
         },
@@ -1903,6 +2067,8 @@
           "roc_auc": 0.9296536797,
           "sensitivity": 0.8571428571,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.085235259,
+          "train_roc_auc": 0.9616945189,
           "true_negative": 29,
           "true_positive": 24
         },
@@ -1921,6 +2087,8 @@
           "roc_auc": 0.8911335578,
           "sensitivity": 0.7407407407,
           "specificity": 0.7575757576,
+          "train_brier_score": 0.0477098294,
+          "train_roc_auc": 0.9891630316,
           "true_negative": 25,
           "true_positive": 20
         },
@@ -1939,6 +2107,8 @@
           "roc_auc": 0.9095982143,
           "sensitivity": 0.7142857143,
           "specificity": 0.9375,
+          "train_brier_score": 0.0565015078,
+          "train_roc_auc": 0.9851897352,
           "true_negative": 30,
           "true_positive": 20
         },
@@ -1957,6 +2127,8 @@
           "roc_auc": 0.9642857143,
           "sensitivity": 0.75,
           "specificity": 0.9696969697,
+          "train_brier_score": 0.0625009083,
+          "train_roc_auc": 0.9844577402,
           "true_negative": 32,
           "true_positive": 21
         },
@@ -1975,6 +2147,8 @@
           "roc_auc": 0.9686147186,
           "sensitivity": 0.9285714286,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0891565484,
+          "train_roc_auc": 0.9598377003,
           "true_negative": 27,
           "true_positive": 26
         },
@@ -1993,6 +2167,8 @@
           "roc_auc": 0.8322510823,
           "sensitivity": 0.6071428571,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.0679430629,
+          "train_roc_auc": 0.9733855993,
           "true_negative": 28,
           "true_positive": 17
         },
@@ -2011,6 +2187,8 @@
           "roc_auc": 0.9158249158,
           "sensitivity": 0.8148148148,
           "specificity": 0.8484848485,
+          "train_brier_score": 0.0809648004,
+          "train_roc_auc": 0.9642857143,
           "true_negative": 28,
           "true_positive": 22
         },
@@ -2029,6 +2207,8 @@
           "roc_auc": 0.8872767857,
           "sensitivity": 0.8571428571,
           "specificity": 0.78125,
+          "train_brier_score": 0.0186252137,
+          "train_roc_auc": 1.0,
           "true_negative": 25,
           "true_positive": 24
         },
@@ -2047,6 +2227,8 @@
           "roc_auc": 0.9523809524,
           "sensitivity": 0.8571428571,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0866158805,
+          "train_roc_auc": 0.9612131215,
           "true_negative": 30,
           "true_positive": 24
         },
@@ -2065,6 +2247,8 @@
           "roc_auc": 0.9264069264,
           "sensitivity": 0.8214285714,
           "specificity": 0.8181818182,
+          "train_brier_score": 0.0545010944,
+          "train_roc_auc": 0.9889278592,
           "true_negative": 27,
           "true_positive": 23
         },
@@ -2083,6 +2267,8 @@
           "roc_auc": 0.8906926407,
           "sensitivity": 0.7142857143,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.053207503,
+          "train_roc_auc": 0.9860394746,
           "true_negative": 29,
           "true_positive": 20
         },
@@ -2101,6 +2287,8 @@
           "roc_auc": 0.8956228956,
           "sensitivity": 0.8518518519,
           "specificity": 0.696969697,
+          "train_brier_score": 0.0803419519,
+          "train_roc_auc": 0.963808615,
           "true_negative": 23,
           "true_positive": 23
         },
@@ -2119,6 +2307,8 @@
           "roc_auc": 0.8537946429,
           "sensitivity": 0.75,
           "specificity": 0.84375,
+          "train_brier_score": 0.0459976624,
+          "train_roc_auc": 0.9916734917,
           "true_negative": 27,
           "true_positive": 21
         },
@@ -2137,6 +2327,8 @@
           "roc_auc": 0.9307359307,
           "sensitivity": 0.8928571429,
           "specificity": 0.7575757576,
+          "train_brier_score": 0.0800719598,
+          "train_roc_auc": 0.9644453614,
           "true_negative": 25,
           "true_positive": 25
         },
@@ -2155,6 +2347,8 @@
           "roc_auc": 0.9134199134,
           "sensitivity": 0.8214285714,
           "specificity": 0.9090909091,
+          "train_brier_score": 0.0784674946,
+          "train_roc_auc": 0.9691905646,
           "true_negative": 30,
           "true_positive": 23
         },
@@ -2173,6 +2367,8 @@
           "roc_auc": 0.9448051948,
           "sensitivity": 0.75,
           "specificity": 0.9696969697,
+          "train_brier_score": 0.0832487294,
+          "train_roc_auc": 0.9632762534,
           "true_negative": 32,
           "true_positive": 21
         },
@@ -2191,6 +2387,8 @@
           "roc_auc": 0.936026936,
           "sensitivity": 0.8148148148,
           "specificity": 0.8787878788,
+          "train_brier_score": 0.0825480212,
+          "train_roc_auc": 0.9625136314,
           "true_negative": 29,
           "true_positive": 22
         },
@@ -2209,6 +2407,8 @@
           "roc_auc": 0.8705357143,
           "sensitivity": 0.75,
           "specificity": 0.90625,
+          "train_brier_score": 0.0757025562,
+          "train_roc_auc": 0.9689462189,
           "true_negative": 29,
           "true_positive": 21
         }

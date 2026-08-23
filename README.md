@@ -16,7 +16,7 @@ The answer is mixed—and reported without hiding the weak cohort. Logistic regr
 |---|---|
 | What did the project find? | Read the [supervised results](#results), then the [exploratory unsupervised evidence](#unsupervised-patient-profile-evidence). |
 | How rigorous is the ML work? | Follow the eight-stage [project guide](docs/project-guide.md) and inspect the [model card](docs/model-card.md). |
-| Where are the generated numbers and figures? | Use the annotated [report index](reports/README.md); the notebook is only a report consumer. |
+| Where are the generated numbers and figures? | Start with the [model-performance graphs](#model-performance-diagnostics), then use the annotated [report index](reports/README.md). |
 | Can the trained model make a prediction? | Inspect the raw-record [`predict_record` contract](src/heart_disease/artifacts.py) and run the CLI example below. |
 
 - **Supervised track:** heart-disease prediction, nested tuning, threshold selection, and external validation live in [`evaluation.py`](src/heart_disease/evaluation.py).
@@ -63,6 +63,26 @@ _Generated from `reports/metrics.json` (full profile). Intervals are 95% stratif
 <!-- GENERATED_RESULTS_END -->
 
 See [the model card](docs/model-card.md) for interpretation limits and [the generated figures](reports/figures) for ROC, precision–recall, calibration, confusion matrices, missingness, cohort shift, and feature stability.
+
+## Model performance diagnostics
+
+These generated views make model choice, learning behavior, the train–validation gap, hyperparameter stability, and cross-hospital transfer inspectable without reading Python first. Training scores are diagnostic only; held-out nested and external results remain the performance evidence.
+
+<!-- GENERATED_DIAGNOSTICS_START -->
+_Generated from `reports/model-diagnostics.json` (full profile)._
+
+Selected `logistic` mean training ROC-AUC: **0.937**; nested validation ROC-AUC: **0.917**; observed gap: **0.020**.
+
+| Candidate comparison | Learning curve |
+|---|---|
+| ![Nested ROC-AUC by candidate](reports/model-diagnostics/model-comparison.png) | ![Training and validation learning curve](reports/model-diagnostics/learning-curve.png) |
+| Training versus validation | Hyperparameter stability |
+| ![Training versus held-out ROC-AUC](reports/model-diagnostics/train-validation-gap.png) | ![Outer-fold hyperparameter selection frequency](reports/model-diagnostics/hyperparameter-stability.png) |
+
+![Internal and external ROC-AUC with uncertainty](reports/model-diagnostics/cohort-performance.png)
+
+Inspect the [machine-readable diagnostic](reports/model-diagnostics.json) or the [learning-curve data](reports/learning-curve.csv).
+<!-- GENERATED_DIAGNOSTICS_END -->
 
 ## Unsupervised patient-profile evidence
 

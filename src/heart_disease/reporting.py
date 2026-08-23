@@ -38,6 +38,8 @@ RESULTS_START = "<!-- GENERATED_RESULTS_START -->"
 RESULTS_END = "<!-- GENERATED_RESULTS_END -->"
 UNSUPERVISED_START = "<!-- GENERATED_UNSUPERVISED_START -->"
 UNSUPERVISED_END = "<!-- GENERATED_UNSUPERVISED_END -->"
+DIAGNOSTICS_START = "<!-- GENERATED_DIAGNOSTICS_START -->"
+DIAGNOSTICS_END = "<!-- GENERATED_DIAGNOSTICS_END -->"
 
 
 def _metric_interval(metric: dict[str, object], name: str) -> str:
@@ -104,6 +106,68 @@ def sync_readme_results(readme_path: Path, metrics: dict[str, object]) -> None:
     block = render_results_markdown(metrics)
     readme_path.write_text(
         f"{before}{RESULTS_START}\n{block}\n{RESULTS_END}{after}",
+        encoding="utf-8",
+    )
+
+
+def render_model_diagnostics_markdown(diagnostics: dict[str, object]) -> str:
+    """Render an accessible graph index from model-diagnostics.json."""
+
+    generalization = diagnostics["generalization"]
+    if not isinstance(generalization, dict):
+        raise TypeError("Diagnostic generalization evidence must be a mapping")
+    selected = diagnostics["selected_model"]
+    return "\n".join(
+        [
+            f"_Generated from `reports/model-diagnostics.json` "
+            f"({diagnostics['profile']} profile)._",
+            "",
+            f"Selected `{selected}` mean training ROC-AUC: "
+            f"**{float(generalization['train_roc_auc_mean']):.3f}**; "
+            f"nested validation ROC-AUC: "
+            f"**{float(generalization['validation_roc_auc_mean']):.3f}**; "
+            f"observed gap: **{float(generalization['roc_auc_gap']):.3f}**.",
+            "",
+            "| Candidate comparison | Learning curve |",
+            "|---|---|",
+            "| ![Nested ROC-AUC by candidate]("
+            "reports/model-diagnostics/model-comparison.png) "
+            "| ![Training and validation learning curve]("
+            "reports/model-diagnostics/learning-curve.png) |",
+            "| Training versus validation | Hyperparameter stability |",
+            "| ![Training versus held-out ROC-AUC]("
+            "reports/model-diagnostics/train-validation-gap.png) "
+            "| ![Outer-fold hyperparameter selection frequency]("
+            "reports/model-diagnostics/hyperparameter-stability.png) |",
+            "",
+            "![Internal and external ROC-AUC with uncertainty]("
+            "reports/model-diagnostics/cohort-performance.png)",
+            "",
+            "Inspect the [machine-readable diagnostic](reports/model-diagnostics.json) "
+            "or the [learning-curve data](reports/learning-curve.csv).",
+        ]
+    )
+
+
+def sync_readme_diagnostics(
+    readme_path: Path,
+    diagnostics: dict[str, object],
+) -> None:
+    """Replace only the fixed model-diagnostics README block."""
+
+    content = readme_path.read_text(encoding="utf-8")
+    if (
+        content.count(DIAGNOSTICS_START) != 1
+        or content.count(DIAGNOSTICS_END) != 1
+    ):
+        raise ValueError(
+            "README must contain exactly one generated-diagnostics marker pair"
+        )
+    before, remainder = content.split(DIAGNOSTICS_START, 1)
+    _, after = remainder.split(DIAGNOSTICS_END, 1)
+    block = render_model_diagnostics_markdown(diagnostics)
+    readme_path.write_text(
+        f"{before}{DIAGNOSTICS_START}\n{block}\n{DIAGNOSTICS_END}{after}",
         encoding="utf-8",
     )
 

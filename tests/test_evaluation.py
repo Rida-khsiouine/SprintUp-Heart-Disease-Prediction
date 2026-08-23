@@ -167,6 +167,23 @@ def test_patient_predictions_are_averaged_across_repeats() -> None:
     assert averaged["probability"].tolist() == pytest.approx([0.3, 0.7])
 
 
+def test_nested_cv_records_training_scores_for_generalization_diagnostic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = pd.Series([0, 1] * 10, name="disease_present")
+    data = CohortData(Cohort.CLEVELAND, _features(), target, target.copy())
+    monkeypatch.setattr(evaluation, "CANDIDATE_MODELS", ("dummy",))
+
+    result = run_nested_cv(
+        data,
+        ExperimentConfig(outer_splits=2, outer_repeats=1, inner_splits=2),
+    )["dummy"]
+
+    assert {"train_roc_auc", "train_brier_score"} <= set(result.fold_metrics)
+    assert result.fold_metrics["train_roc_auc"].tolist() == [0.5, 0.5]
+    assert np.isfinite(result.fold_metrics["train_brier_score"]).all()
+
+
 def test_selection_uses_calibration_as_a_tie_breaker() -> None:
     logistic = _candidate("logistic", [0.8, 0.8])
     forest = _candidate("random_forest", [0.8, 0.8])

@@ -41,6 +41,16 @@ def test_cli_smoke_reproduce_creates_expected_outputs(
     )
     assert metrics["profile"] == "smoke"
     assert metrics["selection"]["model_name"] == "logistic"
+    assert (tmp_path / "reports" / "model-diagnostics.json").is_file()
+    assert (tmp_path / "reports" / "learning-curve.csv").is_file()
+    diagnostic_figures = tmp_path / "reports" / "model-diagnostics"
+    assert {
+        "cohort-performance.png",
+        "hyperparameter-stability.png",
+        "learning-curve.png",
+        "model-comparison.png",
+        "train-validation-gap.png",
+    } == {path.name for path in diagnostic_figures.iterdir()}
     assert (tmp_path / "reports" / "unsupervised" / "summary.json").is_file()
     assert (
         tmp_path / "reports" / "unsupervised" / "external-transfer.csv"
