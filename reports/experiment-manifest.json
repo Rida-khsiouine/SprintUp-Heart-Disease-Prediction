@@ -6,7 +6,7 @@
     "switzerland": "834a405ccf5b66ab4056bb77794adc8df0b7125186454c0a1d002d33c6c3b314",
     "va": "e7c93d8d0d2acdadfa4c5e8de768e2191e7f618b952e29623f1f0d5949ff6b8f"
   },
-  "git_commit": "b9b4cf44741f9fc5e8700ca0d206add96dbb81a8",
+  "git_commit": "9405f4211ee9b575226fc1264e0bdaccec3f8db0",
   "package_versions": {
     "heart_disease": "2.0.0",
     "numpy": "2.5.2",

@@ -10,6 +10,11 @@ from typing import Literal
 from heart_disease import evaluation
 from heart_disease.artifacts import save_artifact
 from heart_disease.data import Cohort
+from heart_disease.diagnostics import (
+    build_model_diagnostics,
+    compute_learning_curve,
+    write_model_diagnostics,
+)
 from heart_disease.evaluation import average_patient_predictions, classification_metrics
 from heart_disease.external import (
     Thresholds,
@@ -20,6 +25,7 @@ from heart_disease.models import ExperimentConfig
 from heart_disease.reporting import (
     build_experiment_manifest,
     generate_evidence_outputs,
+    sync_readme_diagnostics,
     sync_readme_results,
     sync_readme_unsupervised,
 )
@@ -186,6 +192,7 @@ def reproduce_study(
     external_metrics = evaluate_external(
         fitted, external_cohorts, thresholds, config
     )
+    learning_curve = compute_learning_curve(development, selection, config)
 
     selected_oof = average_patient_predictions(
         results[selection.model_name].predictions
@@ -242,6 +249,16 @@ def reproduce_study(
     )
     external_path = reports_dir / "external-validation.csv"
     external_metrics.to_csv(external_path, index=False, lineterminator="\n")
+    diagnostics_summary = build_model_diagnostics(
+        results=results,
+        selection=selection,
+        learning_curve=learning_curve,
+        metrics=metrics,
+    )
+    diagnostic_paths = write_model_diagnostics(
+        diagnostics_summary,
+        reports_dir,
+    )
 
     data_manifest = json.loads(
         (data_dir / "manifest.json").read_text(encoding="utf-8")
@@ -304,12 +321,17 @@ def reproduce_study(
     readme_path = output_dir / "README.md"
     if readme_path.is_file():
         sync_readme_results(readme_path, metrics)
+        sync_readme_diagnostics(readme_path, diagnostics_summary)
     return {
         "artifact": artifact_path,
         "metadata": artifact_dir / "metadata.json",
         "metrics": metrics_path,
         "external_validation": external_path,
         "experiment_manifest": manifest_path,
+        **{
+            f"model_diagnostics_{name}": path
+            for name, path in diagnostic_paths.items()
+        },
         **{
             f"unsupervised_{name}": path
             for name, path in unsupervised_paths.items()

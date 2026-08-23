@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from pathlib import Path
 
+import heart_disease.reporting as reporting
 from heart_disease.evaluation import Selection
 from heart_disease.models import ExperimentConfig
 from heart_disease.reporting import (
@@ -24,6 +26,49 @@ def test_readme_results_match_metrics_json() -> None:
     generated = readme.split(RESULTS_START, 1)[1].split(RESULTS_END, 1)[0].strip()
 
     assert generated == render_results_markdown(metrics).strip()
+
+
+def test_render_model_diagnostics_markdown_exposes_every_graph() -> None:
+    rendered = reporting.render_model_diagnostics_markdown(
+        {
+            "profile": "full",
+            "selected_model": "logistic",
+            "generalization": {
+                "train_roc_auc_mean": 0.915,
+                "validation_roc_auc_mean": 0.830,
+                "roc_auc_gap": 0.085,
+            },
+        }
+    )
+
+    assert "`logistic`" in rendered
+    assert "0.085" in rendered
+    assert "reports/model-diagnostics.json" in rendered
+    assert {
+        "reports/model-diagnostics/cohort-performance.png",
+        "reports/model-diagnostics/hyperparameter-stability.png",
+        "reports/model-diagnostics/learning-curve.png",
+        "reports/model-diagnostics/model-comparison.png",
+        "reports/model-diagnostics/train-validation-gap.png",
+    } <= set(re.findall(r"!\[[^]]*\]\(([^)]+)\)", rendered))
+
+
+def test_readme_model_diagnostics_match_generated_summary() -> None:
+    diagnostics = json.loads(
+        (PROJECT_ROOT / "reports" / "model-diagnostics.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    generated = (
+        readme.split(reporting.DIAGNOSTICS_START, 1)[1]
+        .split(reporting.DIAGNOSTICS_END, 1)[0]
+        .strip()
+    )
+
+    assert generated == reporting.render_model_diagnostics_markdown(
+        diagnostics
+    ).strip()
 
 
 def test_experiment_manifest_contains_required_provenance() -> None:
@@ -50,6 +95,34 @@ def test_experiment_manifest_contains_required_provenance() -> None:
         "switzerland",
         "va",
     }
+
+
+def test_experiment_manifest_source_commit_contains_diagnostics_generator() -> None:
+    manifest = json.loads(
+        (PROJECT_ROOT / "reports" / "experiment-manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    source_commit = manifest["git_commit"]
+
+    contains_generator = subprocess.run(
+        [
+            "git",
+            "cat-file",
+            "-e",
+            f"{source_commit}:src/heart_disease/diagnostics.py",
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+    is_ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+
+    assert contains_generator.returncode == 0
+    assert is_ancestor.returncode == 0
 
 
 def test_manifest_builder_records_unsupervised_boundaries() -> None:

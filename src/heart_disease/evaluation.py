@@ -316,9 +316,19 @@ def run_nested_cv(
                 split_seed=config.seed + split_index,
             )
             probability = fitted.predict_proba(test_features)[:, 1]
+            training_probability = fitted.predict_proba(training_features)[:, 1]
             metrics = classification_metrics(test_truth, probability)
+            training_metrics = classification_metrics(
+                training_truth, training_probability
+            )
             metric_rows[model_name].append(
-                {"repeat": repeat, "fold": fold, **metrics}
+                {
+                    "repeat": repeat,
+                    "fold": fold,
+                    "train_roc_auc": training_metrics["roc_auc"],
+                    "train_brier_score": training_metrics["brier_score"],
+                    **metrics,
+                }
             )
             parameters[model_name].append(best_parameters)
             fold_importances = _feature_importances(fitted)

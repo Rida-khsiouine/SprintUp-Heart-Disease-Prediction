@@ -22,6 +22,8 @@ Feature missingness differs sharply by cohort, especially for `ca`, `thal`, and 
 
 Internal evidence comes from averaged patient-level out-of-fold probabilities; it is not training-set performance. External results use a frozen final pipeline and frozen thresholds. Stratified patient bootstraps quantify uncertainty. AUC is explicitly unavailable when a cohort or resample has only one class.
 
+The generated diagnostics compare outer-training and held-out nested ROC-AUC, show how the selected model changes as training rows increase, and expose hyperparameter-selection frequency. These views cannot prove that overfitting is absent; they help distinguish internal fit behavior from the separate problem of cross-hospital transportability. The synchronized evidence and graphs are in `reports/model-diagnostics.json`, `reports/learning-curve.csv`, and `reports/model-diagnostics/`.
+
 The external results show meaningful **distribution shift** and a material decline in discrimination on VA Long Beach. No cohort is omitted because its result is weak. Refer to `reports/metrics.json`, `reports/external-validation.csv`, and `reports/cohort-shift.csv` for the generated evidence.
 
 ## Subgroups and fairness

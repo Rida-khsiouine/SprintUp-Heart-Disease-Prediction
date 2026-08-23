@@ -1,0 +1,159 @@
+{
+  "cohort_performance": [
+    {
+      "ci_high": 0.946003684857,
+      "ci_low": 0.882257852255,
+      "cohort": "cleveland_oof",
+      "roc_auc": 0.916344972802
+    },
+    {
+      "ci_high": 0.932809363709,
+      "ci_low": 0.854417151746,
+      "cohort": "hungary",
+      "roc_auc": 0.895774789241
+    },
+    {
+      "ci_high": 0.89785326087,
+      "ci_low": 0.573858695652,
+      "cohort": "switzerland",
+      "roc_auc": 0.752173913043
+    },
+    {
+      "ci_high": 0.781158705093,
+      "ci_low": 0.623493222792,
+      "cohort": "va",
+      "roc_auc": 0.706671930517
+    }
+  ],
+  "generalization": {
+    "roc_auc_gap": 0.019703919866,
+    "train_roc_auc_mean": 0.93685820077,
+    "validation_roc_auc_mean": 0.917154280904
+  },
+  "learning_curve": [
+    {
+      "train_roc_auc_mean": 0.940879880151,
+      "train_roc_auc_std": 0.032583491888,
+      "training_rows": 60,
+      "validation_roc_auc_mean": 0.880032517637,
+      "validation_roc_auc_std": 0.036331470228
+    },
+    {
+      "train_roc_auc_mean": 0.938483062392,
+      "train_roc_auc_std": 0.021186040776,
+      "training_rows": 121,
+      "validation_roc_auc_mean": 0.909267977393,
+      "validation_roc_auc_std": 0.037640498322
+    },
+    {
+      "train_roc_auc_mean": 0.939316449471,
+      "train_roc_auc_std": 0.01555338068,
+      "training_rows": 181,
+      "validation_roc_auc_mean": 0.914770222062,
+      "validation_roc_auc_std": 0.031433491852
+    },
+    {
+      "train_roc_auc_mean": 0.935916202462,
+      "train_roc_auc_std": 0.009491468729,
+      "training_rows": 242,
+      "validation_roc_auc_mean": 0.916916386083,
+      "validation_roc_auc_std": 0.032903765075
+    }
+  ],
+  "model_comparison": [
+    {
+      "folds": 25,
+      "model_name": "dummy",
+      "roc_auc_gap": 0.0,
+      "train_roc_auc_mean": 0.5,
+      "validation_roc_auc_mean": 0.5,
+      "validation_roc_auc_std": 0.0,
+      "variability_measure": "outer_fold_standard_deviation"
+    },
+    {
+      "folds": 25,
+      "model_name": "logistic",
+      "roc_auc_gap": 0.019703919866,
+      "train_roc_auc_mean": 0.93685820077,
+      "validation_roc_auc_mean": 0.917154280904,
+      "validation_roc_auc_std": 0.032235593529,
+      "variability_measure": "outer_fold_standard_deviation"
+    },
+    {
+      "folds": 25,
+      "model_name": "random_forest",
+      "roc_auc_gap": 0.060098037351,
+      "train_roc_auc_mean": 0.97437358048,
+      "validation_roc_auc_mean": 0.91427554313,
+      "validation_roc_auc_std": 0.034246622555,
+      "variability_measure": "outer_fold_standard_deviation"
+    },
+    {
+      "folds": 25,
+      "model_name": "gradient_boosting",
+      "roc_auc_gap": 0.044266047052,
+      "train_roc_auc_mean": 0.947618620405,
+      "validation_roc_auc_mean": 0.903352573353,
+      "validation_roc_auc_std": 0.040750232138,
+      "variability_measure": "outer_fold_standard_deviation"
+    }
+  ],
+  "parameter_stability": [
+    {
+      "count": 10,
+      "fraction": 0.4,
+      "parameters": {
+        "model__C": 0.1,
+        "model__class_weight": null
+      }
+    },
+    {
+      "count": 8,
+      "fraction": 0.32,
+      "parameters": {
+        "model__C": 1,
+        "model__class_weight": null
+      }
+    },
+    {
+      "count": 6,
+      "fraction": 0.24,
+      "parameters": {
+        "model__C": 0.1,
+        "model__class_weight": "balanced"
+      }
+    },
+    {
+      "count": 1,
+      "fraction": 0.04,
+      "parameters": {
+        "model__C": 1,
+        "model__class_weight": "balanced"
+      }
+    }
+  ],
+  "profile": "full",
+  "repeat_stability": [
+    {
+      "mean_roc_auc": 0.920094797178,
+      "repeat": 0
+    },
+    {
+      "mean_roc_auc": 0.917945326279,
+      "repeat": 1
+    },
+    {
+      "mean_roc_auc": 0.921826899952,
+      "repeat": 2
+    },
+    {
+      "mean_roc_auc": 0.909075877826,
+      "repeat": 3
+    },
+    {
+      "mean_roc_auc": 0.916828503287,
+      "repeat": 4
+    }
+  ],
+  "selected_model": "logistic"
+}
