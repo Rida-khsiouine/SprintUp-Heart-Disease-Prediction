@@ -192,7 +192,7 @@ def reproduce_study(
     external_metrics = evaluate_external(
         fitted, external_cohorts, thresholds, config
     )
-    learning_curve = compute_learning_curve(development, fitted, config)
+    learning_curve = compute_learning_curve(development, selection, config)
 
     selected_oof = average_patient_predictions(
         results[selection.model_name].predictions

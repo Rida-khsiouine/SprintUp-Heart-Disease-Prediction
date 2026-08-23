@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from pathlib import Path
 
 import heart_disease.reporting as reporting
@@ -94,6 +95,34 @@ def test_experiment_manifest_contains_required_provenance() -> None:
         "switzerland",
         "va",
     }
+
+
+def test_experiment_manifest_source_commit_contains_diagnostics_generator() -> None:
+    manifest = json.loads(
+        (PROJECT_ROOT / "reports" / "experiment-manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    source_commit = manifest["git_commit"]
+
+    contains_generator = subprocess.run(
+        [
+            "git",
+            "cat-file",
+            "-e",
+            f"{source_commit}:src/heart_disease/diagnostics.py",
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+    is_ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+
+    assert contains_generator.returncode == 0
+    assert is_ancestor.returncode == 0
 
 
 def test_manifest_builder_records_unsupervised_boundaries() -> None:

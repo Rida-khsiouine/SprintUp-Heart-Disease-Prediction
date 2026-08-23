@@ -16,11 +16,14 @@ import matplotlib
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.model_selection import learning_curve as sklearn_learning_curve
-from sklearn.pipeline import Pipeline
 
-from heart_disease.evaluation import CandidateResult, Selection
+from heart_disease.evaluation import (
+    CandidateResult,
+    Selection,
+    _fit_outer_candidate,
+)
 from heart_disease.models import ExperimentConfig, ModelName
 from heart_disease.validation import CohortData
 
@@ -32,39 +35,128 @@ def _rounded(value: float) -> float:
     return round(float(value), 12)
 
 
+def _stratified_subsample_positions(
+    truth: pd.Series,
+    training_rows: int,
+    *,
+    seed: int,
+) -> np.ndarray:
+    """Select an exact-size deterministic subset without constraining leftovers."""
+
+    values = np.asarray(truth)
+    if training_rows <= 0 or training_rows > len(values):
+        raise ValueError("Training rows must be between one and the cohort size")
+    classes, counts = np.unique(values, return_counts=True)
+    if training_rows < len(classes):
+        raise ValueError("Training rows must be at least the number of classes")
+    if training_rows == len(values):
+        return np.arange(len(values), dtype=int)
+
+    exact = counts * training_rows / len(values)
+    allocated = np.floor(exact).astype(int)
+    allocated = np.maximum(allocated, 1)
+    while allocated.sum() < training_rows:
+        eligible = np.flatnonzero(allocated < counts)
+        remainders = exact[eligible] - allocated[eligible]
+        chosen = eligible[int(np.argmax(remainders))]
+        allocated[chosen] += 1
+    while allocated.sum() > training_rows:
+        eligible = np.flatnonzero(allocated > 1)
+        surplus = allocated[eligible] - exact[eligible]
+        chosen = eligible[int(np.argmax(surplus))]
+        allocated[chosen] -= 1
+
+    generator = np.random.default_rng(seed)
+    selected: list[int] = []
+    for class_value, class_rows in zip(classes, allocated, strict=True):
+        positions = np.flatnonzero(values == class_value)
+        selected.extend(
+            generator.choice(positions, size=int(class_rows), replace=False).tolist()
+        )
+    return np.sort(np.asarray(selected, dtype=int))
+
+
 def compute_learning_curve(
     development: CohortData,
-    pipeline: Pipeline,
+    selection: Selection,
     config: ExperimentConfig,
     *,
     train_fractions: tuple[float, ...] = (0.25, 0.5, 0.75, 1.0),
 ) -> pd.DataFrame:
-    """Measure selected-model learning behavior with leakage-safe resampling."""
+    """Tune and score the selected family inside every learning-curve split."""
 
     splitter = RepeatedStratifiedKFold(
         n_splits=config.outer_splits,
         n_repeats=config.outer_repeats,
         random_state=config.seed,
     )
-    sizes, train_scores, validation_scores = sklearn_learning_curve(
-        pipeline,
-        development.features,
-        development.target,
-        train_sizes=np.asarray(train_fractions, dtype=float),
-        cv=splitter,
-        scoring="roc_auc",
-        shuffle=True,
-        random_state=config.seed,
-        n_jobs=-1,
-        error_score="raise",
+    if not train_fractions or any(
+        fraction <= 0 or fraction > 1 for fraction in train_fractions
+    ):
+        raise ValueError("Training fractions must be in the interval (0, 1]")
+    outer_splits = list(splitter.split(development.features, development.target))
+    maximum_rows = min(len(training) for training, _ in outer_splits)
+    sizes = np.asarray(
+        [max(2, int(np.floor(maximum_rows * fraction))) for fraction in train_fractions],
+        dtype=int,
     )
+    if len(np.unique(sizes)) != len(sizes):
+        raise ValueError("Training fractions must produce distinct row counts")
+
+    train_scores: list[list[float]] = [[] for _ in sizes]
+    validation_scores: list[list[float]] = [[] for _ in sizes]
+    for split_index, (training_positions, validation_positions) in enumerate(
+        outer_splits
+    ):
+        outer_features = development.features.iloc[training_positions]
+        outer_truth = development.target.iloc[training_positions]
+        validation_features = development.features.iloc[validation_positions]
+        validation_truth = development.target.iloc[validation_positions]
+        for size_index, training_rows in enumerate(sizes):
+            split_seed = config.seed + split_index * len(sizes) + size_index
+            if training_rows == len(outer_features):
+                subset_features = outer_features
+                subset_truth = outer_truth
+            else:
+                subset_positions = _stratified_subsample_positions(
+                    outer_truth,
+                    int(training_rows),
+                    seed=split_seed,
+                )
+                subset_features = outer_features.iloc[subset_positions]
+                subset_truth = outer_truth.iloc[subset_positions]
+            fitted, _ = _fit_outer_candidate(
+                selection.model_name,
+                subset_features,
+                subset_truth,
+                config=config,
+                split_seed=split_seed,
+            )
+            train_scores[size_index].append(
+                float(
+                    roc_auc_score(
+                        subset_truth,
+                        fitted.predict_proba(subset_features)[:, 1],
+                    )
+                )
+            )
+            validation_scores[size_index].append(
+                float(
+                    roc_auc_score(
+                        validation_truth,
+                        fitted.predict_proba(validation_features)[:, 1],
+                    )
+                )
+            )
+    train_array = np.asarray(train_scores, dtype=float)
+    validation_array = np.asarray(validation_scores, dtype=float)
     return pd.DataFrame(
         {
             "training_rows": sizes.astype(int),
-            "train_roc_auc_mean": train_scores.mean(axis=1),
-            "train_roc_auc_std": train_scores.std(axis=1, ddof=1),
-            "validation_roc_auc_mean": validation_scores.mean(axis=1),
-            "validation_roc_auc_std": validation_scores.std(axis=1, ddof=1),
+            "train_roc_auc_mean": train_array.mean(axis=1),
+            "train_roc_auc_std": train_array.std(axis=1, ddof=1),
+            "validation_roc_auc_mean": validation_array.mean(axis=1),
+            "validation_roc_auc_std": validation_array.std(axis=1, ddof=1),
         }
     )
 
@@ -82,9 +174,7 @@ def _candidate_summary(
         "train_roc_auc_mean": _rounded(training.mean()),
         "validation_roc_auc_mean": _rounded(validation.mean()),
         "validation_roc_auc_std": _rounded(validation.std(ddof=1)),
-        "validation_roc_auc_se": _rounded(
-            validation.std(ddof=1) / np.sqrt(len(validation))
-        ),
+        "variability_measure": "outer_fold_standard_deviation",
         "roc_auc_gap": _rounded(training.mean() - validation.mean()),
     }
 
@@ -205,12 +295,12 @@ def _plot_model_comparison(summary: Mapping[str, object], path: Path) -> None:
     axis.barh(
         table["model_name"],
         table["validation_roc_auc_mean"],
-        xerr=table["validation_roc_auc_se"],
+        xerr=table["validation_roc_auc_std"],
         alpha=0.85,
     )
     axis.axvline(0.5, linestyle="--", color="0.5", label="Chance")
     axis.set(
-        xlabel="Mean nested ROC-AUC ± standard error",
+        xlabel="Mean nested ROC-AUC ± outer-fold SD",
         ylabel="Candidate",
         xlim=(0.45, 1.0),
         title="Candidate model comparison",
