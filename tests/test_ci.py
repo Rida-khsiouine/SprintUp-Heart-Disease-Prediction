@@ -11,9 +11,12 @@ def test_ci_uses_immutable_actions_and_required_checks() -> None:
         encoding="utf-8"
     )
     uses = re.findall(r"uses:\s*[^@\s]+@([^\s#]+)", workflow)
+    checkout_steps = workflow.count("uses: actions/checkout@")
 
     assert uses
     assert all(re.fullmatch(r"[0-9a-f]{40}", reference) for reference in uses)
+    assert checkout_steps == 2
+    assert workflow.count("fetch-depth: 0") == checkout_steps
     assert "contents: read" in workflow
     assert 'python-version: ["3.11", "3.12"]' in workflow
     assert "uv sync --frozen --all-extras" in workflow
