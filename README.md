@@ -4,7 +4,9 @@
 [![Python 3.11–3.12](https://img.shields.io/badge/python-3.11%20%7C%203.12-3776AB)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/code-MIT-green.svg)](LICENSE)
 
-An independently rebuilt, AI-assisted machine-learning study of how a heart-disease classifier generalizes across hospitals. The engineering question is more interesting than a vanity accuracy score: **does a model developed only on Cleveland retain useful discrimination in Hungary, Switzerland, and VA Long Beach?**
+I built this machine-learning study to investigate how well a heart-disease classifier generalizes across hospitals. The engineering question is more interesting than a vanity accuracy score: **does a model developed only on Cleveland retain useful discrimination in Hungary, Switzerland, and VA Long Beach?**
+
+AI-assisted tools supported parts of my auditing, implementation, and documentation workflow. I remained responsible for the methodology, accepted changes, verification, and conclusions; the details are summarized in the [development process](docs/development-process.md).
 
 The answer is mixed—and reported without hiding the weak cohort. Logistic regression is competitive with more complex candidates internally and degrades substantially on VA Long Beach. That is the project’s central result, not an inconvenience to remove.
 
@@ -30,7 +32,7 @@ The answer is mixed—and reported without hiding the weak cohort. Logistic regr
 - One-standard-error model selection that favors a simpler model when performance is statistically indistinguishable.
 - Frozen-model external validation on three untouched hospital cohorts with bootstrap uncertainty.
 - Dataset provenance, immutable checksums, schema validation, safe `skops` serialization, and strict raw-record inference.
-- Machine-readable evidence, an executable thin notebook, CI, and transparent AI-assisted development notes.
+- Machine-readable evidence, an executable thin notebook, automated tests, and CI.
 
 ```mermaid
 flowchart LR
@@ -148,13 +150,9 @@ data/raw/            checksum-verified UCI snapshots
 artifacts/           safe model plus integrity-bound metadata
 reports/             generated metrics, tables, manifests, and figures
 notebooks/           one thin report consumer; no second training implementation
-docs/                design, model card, before/after audit, and AI-development audit
+docs/                project guide, model card, legacy audit, and development process
 ```
 
 The original notebook submission remains inspectable at the annotated Git tag `legacy-v1`; it is not part of this implementation.
-
-## AI assistance and ownership
-
-AI helped audit the legacy work, propose experiments, implement code, and draft documentation. Every accepted behavior is backed by tests, immutable data hashes, executable reproduction, or artifact round-trip checks. [The AI-assisted development report](docs/ai-assisted-development.md) records accepted and rejected suggestions and is deliberately narrower than a claim that AI “replaced a senior engineer.” The repository demonstrates effective human direction plus verifiable automation—not clinical expertise or infallibility.
 
 New code is MIT licensed. The UCI Heart Disease data remains under CC BY 4.0; attribution details are in [data/README.md](data/README.md).

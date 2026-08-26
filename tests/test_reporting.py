@@ -169,15 +169,14 @@ def test_model_card_contains_non_medical_disclaimer() -> None:
     assert "distribution shift" in model_card.lower()
 
 
-def test_ai_report_discloses_ai_authorship_and_verification() -> None:
-    report = (PROJECT_ROOT / "docs" / "ai-assisted-development.md").read_text(
+def test_development_process_discloses_assistance_and_verification() -> None:
+    report = (PROJECT_ROOT / "docs" / "development-process.md").read_text(
         encoding="utf-8"
     )
 
+    assert "project owner" in report.lower()
     assert "ai-assisted" in report.lower()
-    assert "human" in report.lower()
     assert "verification" in report.lower()
-    assert "does not prove" in report.lower()
 
 
 def test_project_guide_links_resolve_to_existing_paths() -> None:

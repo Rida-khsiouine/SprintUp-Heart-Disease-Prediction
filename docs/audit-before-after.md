@@ -11,7 +11,7 @@ The original notebook collection is preserved at annotated tag `legacy-v1`. The 
 | Generalization | Only the cleaned Cleveland subset was evaluated. | Cleveland is development-only; all three other hospitals are frozen external validations with uncertainty and shift evidence. |
 | Artifact | Pickle referenced a notebook-local `__main__.CustomFeatureSelector` and did not own raw preprocessing. | End-to-end `skops` artifact, explicit type allowlist, deterministic bytes, schema/version/hash checks, and strict 13-field inference. |
 | Reproducibility | Multiple notebooks duplicated stateful logic and depended on execution order. | Installable package, locked dependencies, CLI profiles, generated reports, thin executable notebook, and CI. |
-| Claims | Metrics were presented without a model card or clinical limitation. | Model card, uncertainty, underpowered subgroup status, AI disclosure, and explicit non-clinical use. |
+| Claims | Metrics were presented without a model card or clinical limitation. | Model card, uncertainty, underpowered subgroup status, and explicit non-clinical use. |
 
 ## Why the old accuracy looked mediocre
 
